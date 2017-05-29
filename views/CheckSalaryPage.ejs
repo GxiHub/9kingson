@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MushiSalary</title>
+</head>
+<body>
+
+	<form action="/CheckSalaryPeriod/" method="POST">
+		<select name="checkPeriodYear">
+			<option value="2016">2016</option><option selected value="2017">2017</option>
+		</select>
+		<select name="checkPeriodMonth">
+			<option  selected value="1">1</option><option  value="2">2</option>
+			<option value="3">3</option><option  value="4">4</option>
+			<option value="5">5</option><option  value="6">6</option>
+			<option value="7">7</option><option  value="8">8</option>
+			<option value="9">9</option><option  value="10">10</option>
+			<option value="11">11</option><option  value="12">12</option>
+		</select>
+		<select name="checkName">
+			<option  selected value="小香">小香</option><option value="雲翔">雲翔</option>
+			<option value="竹竹">竹竹</option><option value="芳芳">芳芳</option>
+			<option value="藝芳">藝芳</option><option value="蓁蓁">蓁蓁</option>
+			<option value="全部">全部</option>
+		</select>
+		<button type="submit">查詢</button>
+	</form>	 
+	<form action="/" method="GET">
+				<button type="submit">返回老闆權限</button>
+	</form> 
+	<table border='1'>
+	<tbody>
+	      <td> 刪除</td>
+	      <td> 唯一碼 </td>
+	      <td> 員工姓名 </td>
+	      <td> 品牌職位 </td>
+	      <td> 品牌名稱 </td>
+	      <td> 品牌位置 </td>
+	      <td> 上班時間 </td>  
+	      <td> 下班時間 </td>  
+	      <td> 工作分鐘數 </td>  
+	      <td> 當日薪水 </td>  
+	<%  var 薪水累積 = 0 ;
+		for(var i=0; i<SalaryList.length; i++) {%>
+		<%
+		 var PreMonthSplit = SalaryList[i].onlineTiming.split("/");%>
+		 <%if(((SalaryList[i].name == CheckName)||('全部'== CheckName))&&(PreMonthSplit[0] == PeriodYear)&&(PreMonthSplit[1]== parseInt(PeriodMonth,10))){%>
+		 <% 薪水累積 = 薪水累積 + parseInt(SalaryList[i].DailySalary) ;%>
+		<tr>
+		   <td>
+		        <form action="/delete/" method="POST">
+		   			<input type="hidden" placeholder="DeleteType" name="DeleteType" value="Salary">
+		      		<input type="hidden" placeholder="UniqueID" name="UniqueID" value=<%= SalaryList[i].uniID %>>
+		      		<button type="submit">刪除</button>
+		  		</form>
+		   </td>
+		      <td><%= SalaryList[i].uniID %></td>
+		      <td><%= SalaryList[i].name %></td>
+		      <td><%= SalaryList[i].UserBrandTitle %></td>
+		      <td><%= SalaryList[i].UserBrandName %></td>
+		      <td><%= SalaryList[i].UserBrandPlace %></td>
+		      <td><%= SalaryList[i].onlineTiming %></td>
+		      <td><%= SalaryList[i].offLineTiming %></td>
+		      <td><%= SalaryList[i].WorkPeriod %></td>
+		      <td><%= SalaryList[i].DailySalary %></td>
+		</tr>
+		  <% } %>
+	  <% } %>
+	      <td>  </td>
+	      <td>  </td>
+	      <td>  </td>
+	      <td>  </td>
+	      <td>  </td>
+	      <td>  </td>
+	      <td>  </td>  
+	      <td>  </td>  
+	      <td>  </td>  
+	      <td><%= 薪水累積 %></td>  
+	</tbody>
+	</table>
+
+</body>
+</html>
