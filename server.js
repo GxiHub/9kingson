@@ -55,27 +55,21 @@ app.get('/GetTokenToServer/',function(req,res){
     //body = Object.assign({}, results); 
     console.log('req.headers.contenttype = ',req.headers['content-type']);console.log('req.headers.language = ',req.headers['accept-language']);console.log('req.headers.deviceid = ',req.headers['deviceid']);console.log('req.query.usertoken = ',req.query.usertoken);
     
-    SettingPage.CheckDeviceIDAndToken(req.body.deviceid).then(function(items) 
+    SettingPage.CheckDeviceIDAndToken(req.body.deviceid,req.body.usertoken).then(function(items) 
     {
             //console.info('The promise was fulfilled with items!', items);
-            if (req.headers['deviceid'] == items.deviceid) 
+            if(items != null)
             {
-                  if(req.query.usertoken == items.usertoken)
-                  {
                     var body = {'status':{'code':'success','msg':items.status}};
-                    console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);
-                  }
-                  else
-                  {
-                      var body = {'status':{'code':'fail','msg':'發生異常'}};
-                      console.log('  DeviceID is correct But Token is error ');
-                  }
-                  body = JSON.stringify(body); res.type('application/json'); res.send(body);
+                    console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);              
             }
             else
             {
-                  res.sendStatus(404).send('Page Not found'); console.log(' DeviceID is incorrect '); 
-            } 
+              var body = {'status':{'code':'fail','msg':'DeviceID or Token is incorrect'}};
+              console.log('  DeviceID or Token is incorrect '); 
+            }
+            body = JSON.stringify(body); res.type('application/json'); res.send(body);
+
         }, function(err) {
           console.error('The promise was rejected', err, err.stack);
     });  
@@ -85,26 +79,19 @@ app.post('/PostTokenToServer/', (req, res) => {
         //console.log('req.body.deviceid = ',req.body.deviceid); 
         //console.log('req.body.usertoken = ',req.body.usertoken); 
 
-        SettingPage.CheckDeviceIDAndToken(req.body.deviceid).then(function(items) {
+        SettingPage.CheckDeviceIDAndToken(req.body.deviceid,req.body.usertoken).then(function(items) {
             //console.info('The promise was fulfilled with items!', items);
-            if (req.body.deviceid == items.deviceid) 
+            if(items != null)
             {
-                  if(req.body.usertoken == items.usertoken)
-                  {
                     var body = {'status':{'code':'success','msg':items.status}};
-                    console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);
-                  }
-                  else
-                  {
-                      var body = {'status':{'code':'fail','msg':'發生異常'}};
-                      console.log('  DeviceID is correct But Token is error ');
-                  }
-                  body = JSON.stringify(body); res.type('application/json'); res.send(body);
+                    console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);              
             }
             else
             {
-                  res.sendStatus(404).send('Page Not found'); console.log(' DeviceID is incorrect '); 
-            } 
+              var body = {'status':{'code':'fail','msg':'DeviceID or Token is incorrect'}};
+              console.log('  DeviceID or Token is incorrect '); 
+            }
+            body = JSON.stringify(body); res.type('application/json'); res.send(body);
         }, function(err) {
           console.error('The promise was rejected', err, err.stack);
         });

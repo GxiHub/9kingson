@@ -83,13 +83,13 @@ exports.AddUserTokenRelatedInformationFunction = function(DeviceID,UserToken,Use
   });
 }
   
-exports.CheckDeviceIDAndToken = function(DeviceID)
+exports.CheckDeviceIDAndToken = function(DeviceID,Token)
 {
       return new Promise(function(resolve, reject) 
       {
           var collection = dbtoken.collection('usertokenrelatedinformationcollection');
 
-          collection.findOne({ deviceid:'HT43ZWM00590'}, function(err, data ) 
+          collection.findOne({ deviceid:DeviceID,usertoken:Token}, function(err, data ) 
           {
               if (err) { 
                   reject(err);
