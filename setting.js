@@ -85,6 +85,7 @@ exports.AddUserTokenRelatedInformationFunction = function(DeviceID,UserToken,Use
   
 exports.CheckDeviceIDAndToken = function(DeviceID,Token)
 {
+      console.log( 'DeviceID = ',DeviceID,' Token = ',Token);
       return new Promise(function(resolve, reject) 
       {
           var collection = dbtoken.collection('usertokenrelatedinformationcollection');
