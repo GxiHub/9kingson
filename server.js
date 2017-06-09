@@ -22,6 +22,7 @@ var 竹竹職稱 = '兼職'; var 竹竹上班店名 = '滴果'; var 竹竹上班
 var 芳芳職稱 = '兼職'; var 芳芳上班店名 = '滴果'; var 芳芳上班位置 = '中山';
 var 藝芳職稱 = '兼職'; var 藝芳上班店名 = '滴果'; var 藝芳上班位置 = '中山';
 var 蓁蓁職稱 = '兼職'; var 蓁蓁上班店名 = '滴果'; var 蓁蓁上班位置 = '中山';
+var 芸賢職稱 = '兼職'; var 芸賢上班店名 = '滴果'; var 芸賢上班位置 = '中山';
 
 
 var 阿廣職稱 = '兼職'; var 阿廣上班店名 = '牧石'; var 阿廣上班位置 = '桃園';
@@ -40,59 +41,73 @@ MongoClient.connect('mongodb://mushi:mushi@ds137090.mlab.com:37090/mushi_work_ho
   })
 })
 
+var dbtoken;
+MongoClient.connect('mongodb://9kingson:mini0306@ds111622.mlab.com:11622/usertokenrelatedinformation', function(err, database){ 
+  if (err) return console.log(err);
+  dbtoken = database;
+})
+
 app.get('/',function(req,res){
   res.render('index.ejs');
 });
 
 app.get('/GetTokenToServer/',function(req,res){
     //body = Object.assign({}, results); 
-    console.log('req.headers.contenttype = ',req.headers['content-type']);
-    console.log('req.headers.language = ',req.headers['accept-language']);
-    console.log('req.headers.deviceid = ',req.headers['deviceid']);
-    console.log('req.query.usertoken = ',req.query.usertoken);
-
-    if (req.headers['deviceid'] == 'HT43ZWM00590') {
-
-        if(req.query.usertoken == '3f7eff0a0763fc53b5531a1ff3f0789cc4cd0d63b330dc12551bbd339cae4e3e')
-        {
-          console.log(' phase1 ');
-          var body = {'status':{'code':'success','msg':'上班'}};
-        }
-        else if(req.query.usertoken == 'efeca5e285669414cd49c417d0725f5969d29134b72be6e2853036db97d956d8')
-        {
-          console.log(' phase2 ');
-          var body = {'status':{'code':'success','msg':'下班'}};
-        }
-        else
-        {
-          console.log(' phase3 ');
-          var body = {'status':{'code':'fail','msg':'發生異常'}};
-        }
-        console.log(' phase4 ');
-        body = JSON.stringify(body);
-        res.type('application/json');
-        res.send(body);
-    }
-    else
+    console.log('req.headers.contenttype = ',req.headers['content-type']);console.log('req.headers.language = ',req.headers['accept-language']);console.log('req.headers.deviceid = ',req.headers['deviceid']);console.log('req.body.usertoken = ',req.body.usertoken);
+    
+    SettingPage.CheckDeviceIDAndToken(req.body.deviceid).then(function(items) 
     {
-        console.log(' phase5 ');
-        res.status(404).send('Page Not found');
-    }   
+            //console.info('The promise was fulfilled with items!', items);
+            if (req.headers['deviceid'] == items.deviceid) 
+            {
+                  if(req.body.usertoken == items.usertoken)
+                  {
+                    var body = {'status':{'code':'success','msg':items.status}};
+                    console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);
+                  }
+                  else
+                  {
+                      var body = {'status':{'code':'fail','msg':'發生異常'}};
+                      console.log('  DeviceID is correct But Token is error ');
+                  }
+                  body = JSON.stringify(body); res.type('application/json'); res.send(body);
+            }
+            else
+            {
+                  res.sendStatus(404).send('Page Not found'); console.log(' DeviceID is incorrect '); 
+            } 
+        }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    });  
 });
 
 app.post('/PostTokenToServer/', (req, res) => {
-        var body;
-        console.log('req.body.deviceid = ',req.body.deviceid);
-        if (req.body.deviceid == 'HT43ZWM00591') {
-            body = {'name':'Jeff','status':'200'};
-            body = JSON.stringify(body);
-            res.type('application/json');
-            res.send(body);
-        }
-        else
-        {
-            res.send(404)
-        } 
+        //console.log('req.body.deviceid = ',req.body.deviceid); 
+        //console.log('req.body.usertoken = ',req.body.usertoken); 
+
+        SettingPage.CheckDeviceIDAndToken(req.body.deviceid).then(function(items) {
+            //console.info('The promise was fulfilled with items!', items);
+            if (req.body.deviceid == items.deviceid) 
+            {
+                  if(req.body.usertoken == items.usertoken)
+                  {
+                    var body = {'status':{'code':'success','msg':items.status}};
+                    console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);
+                  }
+                  else
+                  {
+                      var body = {'status':{'code':'fail','msg':'發生異常'}};
+                      console.log('  DeviceID is correct But Token is error ');
+                  }
+                  body = JSON.stringify(body); res.type('application/json'); res.send(body);
+            }
+            else
+            {
+                  res.sendStatus(404).send('Page Not found'); console.log(' DeviceID is incorrect '); 
+            } 
+        }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+        });
 });
 
 app.post('/CheckWorkPeriod/',function(req,res){
@@ -153,6 +168,13 @@ app.post('/CheckPurchaseItem/',function(req,res){
   db.collection('PurchaseList').find().toArray(function(err, results) {
       res.render('CheckPurchaseList.ejs',{PurchaseList:results});
   });
+});
+
+app.post('/AddUserTokenRelatedInformationBridge/',function(req,res){
+    var deviceID = req.body.deviceid;var UserToken = req.body.usertoken;var namePass = req.body.username;var statusPass = req.body.status;
+    var brandTitle = req.body.brandtitle;var brandName = req.body.brandname;var brandPlace = req.body.brandplace;
+    SettingPage.AddUserTokenRelatedInformationFunction(deviceID,UserToken,namePass,statusPass,brandTitle,brandName,brandPlace);
+    res.redirect('/');
 });
 
 //========================================================================================
@@ -255,6 +277,19 @@ app.get('/janeoffline/',function(req,res){
   res.redirect('/');
 });
 
+app.get('/yunonline/',function(req,res){
+  var namePass = '芸賢'; var statusPass = '上班'; brandTitle = 芸賢職稱 ; brandName = 芸賢上班店名; brandPlace = 芸賢上班位置;
+  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
+  sleep(1.5);
+  res.redirect('/');
+});
+
+app.get('/yunoffline/',function(req,res){
+  var namePass = '芸賢'; var statusPass = '下班';  brandTitle = 芸賢職稱 ; brandName = 芸賢上班店名; brandPlace = 芸賢上班位置;
+  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
+  sleep(1.5);
+  res.redirect('/');
+});
 
 app.get('/jeffonline/',function(req,res){
   var namePass = '阿廣'; var statusPass = '上班'; brandTitle = 阿廣職稱 ; brandName = 阿廣上班店名; brandPlace = 阿廣上班位置;

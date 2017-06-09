@@ -6,6 +6,14 @@ MongoClient.connect('mongodb://mushi:mushi@ds137090.mlab.com:37090/mushi_work_ho
   db = database;
 })
 
+var dbtoken;
+MongoClient.connect('mongodb://9kingson:mini0306@ds111622.mlab.com:11622/usertokenrelatedinformation', function(err, database){ 
+  if (err) return console.log(err);
+  dbtoken = database;
+})
+
+var Promise = require('rsvp').Promise;
+
 exports.DeleteUserData = function(_UniqueID,_DeleteType)
 {
   if(_DeleteType == 'Setting')
@@ -65,6 +73,31 @@ exports.EmployeeWorkTimeAndStatus = function(UserName,WorkStatus,BrandTitle,Bran
   db.collection('WorkHour').save({uniID:Date.now(),name:UserName,UserBrandTitle:BrandTitle,UserBrandName:BrandName,UserBrandPlace:BrandPlace ,status:WorkStatus,Year:Work_Year,Month:Work_Month,Day:Work_Day,Hour:Work_Hour,Minute:Work_Minute,SalaryCountStatus:SalaryStatus},function(err,result){
     if(err)return console.log(err);
   });
+}
+
+// 用來新增每個人的 token 以及相對應的名稱、上下班狀態、品牌職稱、品牌名稱、品牌地點
+exports.AddUserTokenRelatedInformationFunction = function(DeviceID,UserToken,UserName,WorkStatus,BrandTitle,BrandName,BrandPlace)
+{
+  dbtoken.collection('usertokenrelatedinformationcollection').save({uniID:Date.now(),deviceid:DeviceID,usertoken:UserToken,name:UserName,status:WorkStatus,UserBrandTitle:BrandTitle,UserBrandName:BrandName,UserBrandPlace:BrandPlace},function(err,result){
+    if(err)return console.log(err);
+  });
+}
+  
+exports.CheckDeviceIDAndToken = function(DeviceID)
+{
+      return new Promise(function(resolve, reject) 
+      {
+          var collection = dbtoken.collection('usertokenrelatedinformationcollection');
+
+          collection.findOne({ deviceid:'HT43ZWM00590'}, function(err, data ) 
+          {
+              if (err) { 
+                  reject(err);
+              } else {
+                  resolve(data);
+              }
+          });
+      });
 }
 
 exports.EmployeeSalaryCount = function()
