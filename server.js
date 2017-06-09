@@ -53,14 +53,14 @@ app.get('/',function(req,res){
 
 app.get('/GetTokenToServer/',function(req,res){
     //body = Object.assign({}, results); 
-    console.log('req.headers.contenttype = ',req.headers['content-type']);console.log('req.headers.language = ',req.headers['accept-language']);console.log('req.headers.deviceid = ',req.headers['deviceid']);console.log('req.body.usertoken = ',req.body.usertoken);
+    console.log('req.headers.contenttype = ',req.headers['content-type']);console.log('req.headers.language = ',req.headers['accept-language']);console.log('req.headers.deviceid = ',req.headers['deviceid']);console.log('req.query.usertoken = ',req.query.usertoken);
     
     SettingPage.CheckDeviceIDAndToken(req.body.deviceid).then(function(items) 
     {
             //console.info('The promise was fulfilled with items!', items);
             if (req.headers['deviceid'] == items.deviceid) 
             {
-                  if(req.body.usertoken == items.usertoken)
+                  if(req.query.usertoken == items.usertoken)
                   {
                     var body = {'status':{'code':'success','msg':items.status}};
                     console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);
