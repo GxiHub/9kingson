@@ -26,7 +26,6 @@
 	  	  <td> 計薪狀態 </td> 
 	  	  <td> 更新時間 </td> 
 	<% for(var i=0; i<WorkHour.length; i++) {%>
-		<% if( WorkHour[i].Month == 5 ) {%>
 		<tr>
 		   <td><form action="/delete/" method="POST">
 		   			<input type="hidden" placeholder="DeleteType" name="DeleteType" value="Setting">
@@ -129,7 +128,6 @@
 		      <button type="submit">時間更新</button>
 		      </form>
 		  </td>
-		  <% } %>
 	  <% } %>
 	</tr>
 	</tbody>

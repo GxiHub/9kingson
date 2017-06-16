@@ -60,6 +60,7 @@ app.get('/GetTokenToServer/',function(req,res){
             //console.info('The promise was fulfilled with items!', items);
             if(items != null)
             {
+                    SettingPage.EmployeeWorkTimeAndStatus(items.name,items.status,items.UserBrandTitle,items.UserBrandName,items.UserBrandPlace);
                     var body = {'status':{'code':'success','msg':items.status}};
                     console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);              
             }
@@ -83,6 +84,7 @@ app.post('/PostTokenToServer/', (req, res) => {
             //console.info('The promise was fulfilled with items!', items);
             if(items != null)
             {
+                    SettingPage.EmployeeWorkTimeAndStatus(items.name,items.status,items.UserBrandTitle,items.UserBrandName,items.UserBrandPlace);
                     var body = {'status':{'code':'success','msg':items.status}};
                     console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);              
             }
@@ -112,6 +114,13 @@ app.post('/CheckSalaryPeriod/',function(req,res){
 app.get('/Setting/',function(req,res){
   db.collection('WorkHour').find().toArray(function(err, results) {
       res.render('SettingPage.ejs',{WorkHour:results});
+  });
+});
+
+app.get('/CheckSettingInformation/',function(req,res){
+  dbtoken.collection('usertokenrelatedinformationcollection').find({'name':'林晉安'}).toArray(function(err, results) {
+    json = { 'status':{'code':'success','data':results}};
+    var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
 });
 
