@@ -119,7 +119,7 @@ app.get('/Setting/',function(req,res){
 
 app.get('/CheckSettingInformation/',function(req,res){
   dbtoken.collection('usertokenrelatedinformationcollection').find({'name':'林晉安'}).toArray(function(err, results) {
-    json = { 'status':{'code':'success','data':results}};
+    json = { 'status':{'code':'success'},'data':results};
     var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
 });
