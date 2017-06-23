@@ -76,27 +76,20 @@ app.get('/GetTokenToServer/',function(req,res){
     });  
 });
 
-app.post('/PostTokenToServer/', (req, res) => {
-        //console.log('req.body.deviceid = ',req.body.deviceid); 
-        //console.log('req.body.usertoken = ',req.body.usertoken); 
+app.get('/CheckSettingInformation/',function(req,res){
+  console.log('req.query.UserName = ',req.query.UserName);
+  dbtoken.collection('usertokenrelatedinformationcollection').find({'name':req.query.UserName}).toArray(function(err, results) {
+    json = { 'status':{'code':'success'},'data':results};
+    var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+  });
+});
 
-        SettingPage.CheckDeviceIDAndToken(req.body.deviceid,req.body.usertoken).then(function(items) {
-            //console.info('The promise was fulfilled with items!', items);
-            if(items != null)
-            {
-                    SettingPage.EmployeeWorkTimeAndStatus(items.name,items.status,items.UserBrandTitle,items.UserBrandName,items.UserBrandPlace);
-                    var body = {'status':{'code':'success','msg':items.status}};
-                    console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);              
-            }
-            else
-            {
-              var body = {'status':{'code':'fail','msg':'DeviceID or Token is incorrect'}};
-              console.log('  DeviceID or Token is incorrect '); 
-            }
-            body = JSON.stringify(body); res.type('application/json'); res.send(body);
-        }, function(err) {
-          console.error('The promise was rejected', err, err.stack);
-        });
+app.get('/LoginCheck/',function(req,res){
+  console.log('req.query.UserName = ',req.query.UserName);
+  dbtoken.collection('usertokenrelatedinformationcollection').find({'name':'林晉安'}).toArray(function(err, results) {
+    json = { 'status':{'code':'success'},'data':results};
+    var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+  });
 });
 
 app.post('/CheckWorkPeriod/',function(req,res){
@@ -114,13 +107,6 @@ app.post('/CheckSalaryPeriod/',function(req,res){
 app.get('/Setting/',function(req,res){
   db.collection('WorkHour').find().toArray(function(err, results) {
       res.render('SettingPage.ejs',{WorkHour:results});
-  });
-});
-
-app.get('/CheckSettingInformation/',function(req,res){
-  dbtoken.collection('usertokenrelatedinformationcollection').find({'name':'林晉安'}).toArray(function(err, results) {
-    json = { 'status':{'code':'success'},'data':results};
-    var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
 });
 
