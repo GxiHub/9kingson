@@ -152,20 +152,6 @@ app.post('/AddUserTokenRelatedInformationBridge/',function(req,res){
 
 //========================================================================================
 
-app.get('/jeffonline/',function(req,res){
-  var namePass = '阿廣'; var statusPass = '上班'; brandTitle = 阿廣職稱 ; brandName = 阿廣上班店名; brandPlace = 阿廣上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
-app.get('/jeffoffline/',function(req,res){
-  var namePass = '阿廣'; var statusPass = '下班'; brandTitle = 阿廣職稱 ; brandName = 阿廣上班店名; brandPlace = 阿廣上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
 app.get('/stephyonline/',function(req,res){
   var namePass = '小香'; var statusPass = '上班'; brandTitle = 小香職稱 ; brandName = 小香上班店名; brandPlace = 小香上班位置;
   SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
