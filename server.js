@@ -14,15 +14,6 @@ app.use(bodyParser.urlencoded({extended:true}));
 SettingPage= require('./setting');
 var sleep = require('system-sleep');
 
-
-var 小香職稱 = '兼職'; var 小香上班店名 = '滴果'; var 小香上班位置 = '中山';
-var 竹竹職稱 = '兼職'; var 竹竹上班店名 = '滴果'; var 竹竹上班位置 = '中山';
-var 藝芳職稱 = '兼職'; var 藝芳上班店名 = '滴果'; var 藝芳上班位置 = '中山';
-var 蓁蓁職稱 = '兼職'; var 蓁蓁上班店名 = '滴果'; var 蓁蓁上班位置 = '中山';
-var 芸賢職稱 = '兼職'; var 芸賢上班店名 = '滴果'; var 芸賢上班位置 = '中山';
-
-
-
 var db;
 MongoClient.connect('mongodb://mushi:mushi@ds137090.mlab.com:37090/mushi_work_hour', function(err, database){ 
   if (err) return console.log(err);
@@ -48,7 +39,6 @@ app.get('/GetTokenToServer/',function(req,res){
     
     SettingPage.CheckDeviceIDAndToken(req.headers['deviceid'],req.query.usertoken).then(function(items) 
     {
-            //console.info('The promise was fulfilled with items!', items);
             if(items != null)
             {
                     SettingPage.EmployeeWorkTimeAndStatus(items.name,items.status,items.UserBrandTitle,items.UserBrandName,items.UserBrandPlace);
@@ -57,8 +47,8 @@ app.get('/GetTokenToServer/',function(req,res){
             }
             else
             {
-              var body = {'status':{'code':'fail','msg':'DeviceID or Token is incorrect'}};
-              console.log('  DeviceID or Token is incorrect '); 
+                    var body = {'status':{'code':'fail','msg':'DeviceID or Token is incorrect'}};
+                    console.log('  DeviceID or Token is incorrect '); 
             }
             body = JSON.stringify(body); res.type('application/json'); res.send(body);
 
@@ -75,12 +65,45 @@ app.get('/CheckSettingInformation/',function(req,res){
   });
 });
 
+//透過帳號與密碼去比對資料庫，確認帳號密碼是否正確存在
 app.get('/LoginCheck/',function(req,res){
-  console.log('req.query.UserName = ',req.query.UserName);
-  dbtoken.collection('usertokenrelatedinformationcollection').find({'name':'林晉安'}).toArray(function(err, results) {
-    json = { 'status':{'code':'success'},'data':results};
-    var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+
+    if(results==null)
+    { 
+      json = { 'status':{'code':'fail','msg':'帳號或密碼有錯，請重新輸入'},'data':results}; 
+    }
+    else
+    {
+      if(results.UserBrandTitle == '店長')
+      {
+          dbtoken.collection('memberinformationcollection').find({'UserBrandName':results.UserBrandName}).toArray(function(err, results) {
+            json = { 'status':{'code':'success','msg':'帳號密碼正確'},'data':results};
+            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+          });        
+      }
+      else 
+      {
+            json = { 'status':{'code':'success','msg':'帳號密碼正確'},'data':results};
+            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+      }
+      
+    }
   });
+});
+
+// 如果需要透過網頁設定的話可以使用 req.body，如果要透過 postman 就要使用 req.query
+app.post('/AddUserTokenRelatedInformationBridge/',function(req,res){
+    // var deviceID = req.body.deviceid;var UserToken = req.body.usertoken;var namePass = req.body.username;var statusPass = req.body.status;
+    // var brandTitle = req.body.brandtitle;var brandName = req.body.brandname;var brandPlace = req.body.brandplace;
+    var deviceID = req.query.deviceid;var UserToken = req.query.usertoken;var namePass = req.query.username;var statusPass = req.query.status;
+    var brandTitle = req.query.brandtitle;var brandName = req.query.brandname;var brandPlace = req.query.brandplace;var account = req.query.account;var password = req.query.password;
+    SettingPage.AddUserTokenRelatedInformationFunction(deviceID,UserToken,namePass,statusPass,brandTitle,brandName,brandPlace,account,password);
+});
+
+// 透過postman新增會員資料
+app.post('/AddMemberInformationFunction/',function(req,res){
+    var namePass = req.query.username;var brandTitle = req.query.brandtitle;var brandName = req.query.brandname;var brandPlace = req.query.brandplace;var account = req.query.account;var password = req.query.password;
+    SettingPage.AddMemberInformationFunction(namePass,brandTitle,brandName,brandPlace,account,password);
 });
 
 app.post('/CheckWorkPeriod/',function(req,res){
@@ -143,82 +166,5 @@ app.post('/CheckPurchaseItem/',function(req,res){
   });
 });
 
-app.post('/AddUserTokenRelatedInformationBridge/',function(req,res){
-    var deviceID = req.body.deviceid;var UserToken = req.body.usertoken;var namePass = req.body.username;var statusPass = req.body.status;
-    var brandTitle = req.body.brandtitle;var brandName = req.body.brandname;var brandPlace = req.body.brandplace;
-    SettingPage.AddUserTokenRelatedInformationFunction(deviceID,UserToken,namePass,statusPass,brandTitle,brandName,brandPlace);
-    res.redirect('/');
-});
-
-//========================================================================================
-
-app.get('/stephyonline/',function(req,res){
-  var namePass = '小香'; var statusPass = '上班'; brandTitle = 小香職稱 ; brandName = 小香上班店名; brandPlace = 小香上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
-app.get('/stephyoffline/',function(req,res){
-  var namePass = '小香'; var statusPass = '下班';  brandTitle = 小香職稱 ; brandName = 小香上班店名; brandPlace = 小香上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
-app.get('/joyceonline/',function(req,res){
-  var namePass = '竹竹'; var statusPass = '上班';   brandTitle = 竹竹職稱 ; brandName = 竹竹上班店名; brandPlace = 竹竹上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
-app.get('/joyceoffline/',function(req,res){
-  var namePass = '竹竹'; var statusPass = '下班';   brandTitle = 竹竹職稱 ; brandName = 竹竹上班店名; brandPlace = 竹竹上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
-app.get('/yvonneonline/',function(req,res){
-  var namePass = '藝芳'; var statusPass = '上班';  brandTitle = 藝芳職稱 ; brandName = 藝芳上班店名; brandPlace = 藝芳上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
-app.get('/yvonneoffline/',function(req,res){
-  var namePass = '藝芳'; var statusPass = '下班';  brandTitle = 藝芳職稱 ; brandName = 藝芳上班店名; brandPlace = 藝芳上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
 
 
-app.get('/janeonline/',function(req,res){
-  var namePass = '蓁蓁'; var statusPass = '上班';  brandTitle = 蓁蓁職稱 ; brandName = 蓁蓁上班店名; brandPlace = 蓁蓁上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
-app.get('/janeoffline/',function(req,res){
-  var namePass = '蓁蓁'; var statusPass = '下班';  brandTitle = 蓁蓁職稱 ; brandName = 蓁蓁上班店名; brandPlace = 蓁蓁上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
-app.get('/yunonline/',function(req,res){
-  var namePass = '芸賢'; var statusPass = '上班'; brandTitle = 芸賢職稱 ; brandName = 芸賢上班店名; brandPlace = 芸賢上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
-
-app.get('/yunoffline/',function(req,res){
-  var namePass = '芸賢'; var statusPass = '下班';  brandTitle = 芸賢職稱 ; brandName = 芸賢上班店名; brandPlace = 芸賢上班位置;
-  SettingPage.EmployeeWorkTimeAndStatus(namePass,statusPass,brandTitle,brandName,brandPlace);
-  sleep(1.5);
-  res.redirect('/');
-});
