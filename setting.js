@@ -76,9 +76,17 @@ exports.EmployeeWorkTimeAndStatus = function(UserName,WorkStatus,BrandTitle,Bran
 }
 
 // 用來新增每個人的 token 以及相對應的名稱、上下班狀態、品牌職稱、品牌名稱、品牌地點
-exports.AddUserTokenRelatedInformationFunction = function(DeviceID,UserToken,UserName,WorkStatus,BrandTitle,BrandName,BrandPlace)
+exports.AddUserTokenRelatedInformationFunction = function(DeviceID,UserToken,UserName,WorkStatus,BrandTitle,BrandName,BrandPlace,Account,PassWord)
 {
-  dbtoken.collection('usertokenrelatedinformationcollection').save({uniID:Date.now(),deviceid:DeviceID,usertoken:UserToken,name:UserName,status:WorkStatus,UserBrandTitle:BrandTitle,UserBrandName:BrandName,UserBrandPlace:BrandPlace},function(err,result){
+  dbtoken.collection('usertokenrelatedinformationcollection').save({uniID:Date.now(),deviceid:DeviceID,usertoken:UserToken,name:UserName,status:WorkStatus,UserBrandTitle:BrandTitle,UserBrandName:BrandName,UserBrandPlace:BrandPlace,account:Account,password:PassWord},function(err,result){
+    if(err)return console.log(err);
+  });
+}
+
+// 用來新增每個人的 token 以及相對應的名稱、上下班狀態、品牌職稱、品牌名稱、品牌地點
+exports.AddMemberInformationFunction = function(UserName,BrandTitle,BrandName,BrandPlace,Account,PassWord)
+{
+  dbtoken.collection('memberinformationcollection').save({uniID:Date.now(),name:UserName,UserBrandTitle:BrandTitle,UserBrandName:BrandName,UserBrandPlace:BrandPlace,account:Account,password:PassWord},function(err,result){
     if(err)return console.log(err);
   });
 }
