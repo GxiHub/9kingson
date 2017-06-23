@@ -68,6 +68,7 @@ app.get('/CheckSettingInformation/',function(req,res){
 //透過帳號與密碼去比對資料庫，確認帳號密碼是否正確存在
 app.get('/LoginCheck/',function(req,res){
 
+  dbtoken.collection('memberinformationcollection').findOne({'account':req.headers['account'],"password":req.headers['password']},function(err, results) {
     if(results==null)
     { 
       json = { 'status':{'code':'fail','msg':'帳號或密碼有錯，請重新輸入'},'data':results}; 
