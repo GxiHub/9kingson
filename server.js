@@ -33,6 +33,7 @@ app.get('/',function(req,res){
   res.render('index.ejs');
 });
 
+//透過手機端掃描二維條碼，並添加個人上下班時間
 app.get('/GetTokenToServer/',function(req,res){
     //body = Object.assign({}, results); 
     console.log('req.headers.contenttype = ',req.headers['content-type']);console.log('req.headers.language = ',req.headers['accept-language']);console.log('req.headers.deviceid = ',req.headers['deviceid']);console.log('req.query.usertoken = ',req.query.usertoken);
@@ -57,38 +58,12 @@ app.get('/GetTokenToServer/',function(req,res){
     });  
 });
 
-app.get('/CheckSettingInformation/',function(req,res){
-  console.log('req.query.UserName = ',req.query.UserName);
-  dbtoken.collection('usertokenrelatedinformationcollection').find({'name':req.query.UserName}).toArray(function(err, results) {
-    json = { 'status':{'code':'success'},'data':results};
-    var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
-  });
-});
-
-//透過帳號與密碼去比對資料庫，確認帳號密碼是否正確存在
-app.get('/LoginCheck/',function(req,res){
-
+//透過帳號與密碼比對資料庫，若正確則返回一組 token
+app.get('/FisrtLoginAndReturnMemberToken/',function(req,res){
   dbtoken.collection('memberinformationcollection').findOne({'account':req.headers['account'],"password":req.headers['password']},function(err, results) {
-    if(results==null)
-    { 
-      json = { 'status':{'code':'fail','msg':'帳號或密碼有錯，請重新輸入'},'data':results}; 
-    }
-    else
-    {
-      if(results.UserBrandTitle == '店長')
-      {
-          dbtoken.collection('memberinformationcollection').find({'UserBrandName':results.UserBrandName}).toArray(function(err, results) {
-            json = { 'status':{'code':'success','msg':'帳號密碼正確'},'data':results};
-            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
-          });        
-      }
-      else 
-      {
-            json = { 'status':{'code':'success','msg':'帳號密碼正確'},'data':results};
-            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
-      }
-      
-    }
+    if(results==null){ json = { 'status':{'code':'fail','msg':'帳號或密碼有錯，請重新輸入'},'data':results}; }
+    else{ json = { 'status':{'code':'success','msg':'帳號密碼正確'},'data':results};}
+        var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
 });
 
@@ -107,10 +82,38 @@ app.post('/AddMemberInformationFunction/',function(req,res){
     SettingPage.AddMemberInformationFunction(namePass,brandTitle,brandName,brandPlace,account,password);
 });
 
-app.post('/CheckWorkPeriod/',function(req,res){
-  db.collection('WorkHour').find().toArray(function(err, results) {
-      res.render('WorkHourPage.ejs',{WorkHour:results,PeriodYear:req.body.checkPeriodYear,PeriodMonth:req.body.checkPeriodMonth,CheckName:req.body.checkName});
+// 檢查上班情形
+app.get('/CheckSettingInformation/',function(req,res){
+  console.log('req.query.UserName = ',req.query.UserName);
+  //db.collection.find( { field: { $gt: value1, $lt: value2 } } );
+  dbtoken.collection('usertokenrelatedinformationcollection').find({'name':req.query.UserName}).toArray(function(err, results) {
+    json = { 'status':{'code':'success'},'data':results};
+    var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
+});
+
+// 傳遞 uniID 當作索引來查詢員工姓名，再查詢出員工上班狀況
+app.get('/QueryPersonalSalaryList/',function(req,res){
+    console.log(' req.headers[uniid] = ',req.headers['uniid']);
+    SettingPage.GetUniIDAndUseItAsQueryParameter(req.headers['uniid']).then(function(items) 
+    {
+            if(items != null)
+            {
+                    console.log(' items.name = ',items.name);
+                    db.collection('CountSalary').find({'name':items.name}).toArray(function(err, results) {
+                      json = { 'status':{'code':'success'},'data':results};
+                      var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+                    });           
+            }
+            else
+            {
+                    var body = {'status':{'code':'fail','msg':'WithErrorUniID'}};
+                    console.log('  WithErrorUniID'); 
+                    body = JSON.stringify(body); res.type('application/json'); res.send(body);
+            }
+        }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    });  
 });
 
 app.post('/CheckSalaryPeriod/',function(req,res){
