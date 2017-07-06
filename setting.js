@@ -69,6 +69,14 @@ exports.AddMemberInformationFunction = function(UserName,Account,PassWord)
   });
 }
 
+// 用來新增每個人的店務名稱、品牌、地點
+exports.AddMemberBrandInformation = function(UniID,UserName,UserBrandtitle,UserBrandname,UserBrandplace)
+{
+  dbtoken.collection('memberbrandinformation').save({uniID:UniID,name:UserName,userbrandtitle:UserBrandtitle,userbrandname:UserBrandname,userbrandplace:UserBrandplace},function(err,result){
+    if(err)return console.log(err);
+  });
+}
+
 // 若是要使用uniID當作查詢索引，需要透過 parseInt 來把變數變成int
 exports.GetUniIDAndUseItAsQueryParameter = function(UniID)
 {

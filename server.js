@@ -54,7 +54,7 @@ app.get('/GetTokenToServer/',function(req,res){
             }
             else
             {
-                    var body = {'status':{'code':'fail','msg':'DeviceID or Token is incorrect'}};
+                    var body = {'status':{'code':'E0001','msg':'DeviceID or Token is incorrect'}};
             }
             body = JSON.stringify(body); res.type('application/json'); res.send(body);
 
@@ -66,10 +66,44 @@ app.get('/GetTokenToServer/',function(req,res){
 //透過帳號與密碼比對資料庫，若正確則返回一組 token
 app.get('/FisrtLoginAndReturnMemberToken/',function(req,res){
   dbtoken.collection('memberinformationcollection').findOne({'account':req.headers['account'],"password":req.headers['password']},function(err, results) {
-    if(results==null){ json = { 'status':{'code':'fail','msg':'帳號或密碼有錯，請重新輸入'},'data':results}; }
+    if(results==null){ json = { 'status':{'code':'E0002','msg':'帳號或密碼有錯，請重新輸入'},'data':results}; }
     else{ json = { 'status':{'code':'success','msg':'帳號密碼正確'},'data':results.uniID};}
         var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
+});
+
+//透過帳號與密碼比對資料庫，若正確則返回一組 token
+app.get('/GetMemberBrandInformation/',function(req,res){
+  dbtoken.collection('memberbrandinformation').findOne({'account':req.headers['uniID']},function(err, results) {
+    if(results==null){ json = { 'status':{'code':'E0003','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
+    else{ json = { 'status':{'code':'success','msg':'唯一碼正確'},'data':results};}
+        var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+  });
+});
+
+
+// 傳遞 uniID 當作索引來查詢員工姓名，再查詢出員工上班狀況
+app.get('/QueryPersonalSalaryList/',function(req,res){
+    console.log(' req.headers[uniid] = ',req.headers['uniid']);
+    SettingPage.GetUniIDAndUseItAsQueryParameter(req.headers['uniid']).then(function(items) 
+    {
+            if(items != null)
+            {
+                    console.log(' items.name = ',items.name);
+                    dbwork.collection('CountSalary').find({'name':items.name}).toArray(function(err, results) {
+                      json = { 'status':{'code':'success','msg':'唯一碼正確'},'data':results};
+                      var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+                    });           
+            }
+            else
+            {
+                    var body = {'status':{'code':'E0004','msg':'唯一碼有錯，請重新輸入'}};
+                    console.log('  WithErrorUniID'); 
+                    body = JSON.stringify(body); res.type('application/json'); res.send(body);
+            }
+        }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    });  
 });
 
 // 如果需要透過網頁設定的話可以使用 req.body，如果要透過 postman 就要使用 req.query
@@ -85,6 +119,12 @@ app.post('/AddMemberInformationFunction/',function(req,res){
     SettingPage.AddMemberInformationFunction(namePass,account,password);
 });
 
+// 透過postman新增會員品牌店務資料
+app.post('/AddMemberBrandInformation/',function(req,res){
+    var uniID = req.query.uniID;var namePass = req.query.username;var userBrandtitle = req.query.userbrandtitle;var userBrandname = req.query.userbrandname;var userBrandplace = req.query.userbrandplace;
+    SettingPage.AddMemberBrandInformation(uniID,namePass,userBrandtitle,userBrandname,userBrandplace);
+});
+
 // 檢查上班情形
 app.get('/CheckSettingInformation/',function(req,res){
   console.log('req.query.UserName = ',req.query.UserName);
@@ -93,30 +133,6 @@ app.get('/CheckSettingInformation/',function(req,res){
     json = { 'status':{'code':'success'},'data':results};
     var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
-});
-
-// 傳遞 uniID 當作索引來查詢員工姓名，再查詢出員工上班狀況
-app.get('/QueryPersonalSalaryList/',function(req,res){
-    console.log(' req.headers[uniid] = ',req.headers['uniid']);
-    SettingPage.GetUniIDAndUseItAsQueryParameter(req.headers['uniid']).then(function(items) 
-    {
-            if(items != null)
-            {
-                    console.log(' items.name = ',items.name);
-                    dbwork.collection('CountSalary').find({'name':items.name}).toArray(function(err, results) {
-                      json = { 'status':{'code':'success'},'data':results};
-                      var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
-                    });           
-            }
-            else
-            {
-                    var body = {'status':{'code':'fail','msg':'WithErrorUniID'}};
-                    console.log('  WithErrorUniID'); 
-                    body = JSON.stringify(body); res.type('application/json'); res.send(body);
-            }
-        }, function(err) {
-          console.error('The promise was rejected', err, err.stack);
-    });  
 });
 
 app.post('/CheckSalaryPeriod/',function(req,res){
