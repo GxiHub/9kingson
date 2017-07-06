@@ -13,14 +13,13 @@
 		<select name="checkPeriodMonth">
 			<option value="1">1</option><option  value="2">2</option>
 			<option value="3">3</option><option  value="4">4</option>
-			<option selected value="5">5</option><option  value="6">6</option>
+			<option value="5">5</option><option selected value="6">6</option>
 			<option value="7">7</option><option  value="8">8</option>
 			<option value="9">9</option><option  value="10">10</option>
 			<option value="11">11</option><option  value="12">12</option>
 		</select>
 		<select name="checkName">
-			<option  selected value="小香">小香</option><option value="雲翔">雲翔</option>
-			<option value="竹竹">竹竹</option><option value="芳芳">芳芳</option>
+			<option  selected value="小香">小香</option><option value="竹竹">竹竹</option><
 			<option value="藝芳">藝芳</option><option value="蓁蓁">蓁蓁</option>
 			<option value="芸賢">芸賢</option><option value="全部">全部</option>
 		</select>
@@ -32,11 +31,9 @@
 	<table border='1'>
 	<tbody>
 	      <td> 刪除</td>
+	      <td> 時間碼 </td>
 	      <td> 唯一碼 </td>
 	      <td> 員工姓名 </td>
-	      <td> 品牌職位 </td>
-	      <td> 品牌名稱 </td>
-	      <td> 品牌位置 </td>
 	      <td> 上班時間 </td>  
 	      <td> 下班時間 </td>  
 	      <td> 工作分鐘數 </td>  
@@ -55,11 +52,9 @@
 		      		<button type="submit">刪除</button>
 		  		</form>
 		   </td>
+		   	  <td><%= SalaryList[i].TID %></td>
 		      <td><%= SalaryList[i].uniID %></td>
 		      <td><%= SalaryList[i].name %></td>
-		      <td><%= SalaryList[i].UserBrandTitle %></td>
-		      <td><%= SalaryList[i].UserBrandName %></td>
-		      <td><%= SalaryList[i].UserBrandPlace %></td>
 		      <td><%= SalaryList[i].onlineTiming %></td>
 		      <td><%= SalaryList[i].offLineTiming %></td>
 		      <td><%= SalaryList[i].WorkPeriod %></td>
@@ -73,8 +68,6 @@
 	      <td>  </td>
 	      <td>  </td>
 	      <td>  </td>
-	      <td>  </td>  
-	      <td>  </td>  
 	      <td>  </td>  
 	      <td><%= 薪水累積 %></td>  
 	</tbody>

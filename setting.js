@@ -12,57 +12,16 @@ MongoClient.connect('mongodb://9kingson:mini0306@ds111622.mlab.com:11622/usertok
   dbtoken = database;
 })
 
+var dbwork;
+MongoClient.connect('mongodb://9kingson:9kingson@ds149382.mlab.com:49382/workinformation', function(err, database){ 
+  if (err) return console.log(err);
+  dbwork = database;
+})
+
 var Promise = require('rsvp').Promise;
 
-exports.DeleteUserData = function(_UniqueID,_DeleteType)
-{
-  if(_DeleteType == 'Setting')
-  {
-    db.collection('WorkHour').findOneAndDelete({uniID:parseInt(_UniqueID,10)},
-    (err, result) => {
-      if (err) return res.send(500, err);
-    })
-  }
-  else if(_DeleteType == 'Salary')
-  {
-    db.collection('CountSalary').findOneAndDelete({uniID:parseInt(_UniqueID,10)},
-      (err, result) => {
-        if (err) return res.send(500, err);
-      })
-  }
-  else if(_DeleteType == 'PurchaseList')
-  {
-    db.collection('PurchaseList').findOneAndDelete({uniID:parseInt(_UniqueID,10)},
-      (err, result) => {
-        if (err) return res.send(500, err);
-      })  
-  }
-
-}
-
-exports.UpdateUserData = function(_UniqueID,_UpdateHour,_UpdateMinute,_UpdateDay,_UpdateMonth)
-{ 
-  console.log('_UniqueID=',_UniqueID);
-  console.log('_UpdateHour=',_UpdateHour);
-  console.log('_UpdateMinute=',_UpdateMinute);
-  db.collection('WorkHour').findOneAndUpdate({uniID:parseInt(_UniqueID,10)},{
-    $set: 
-    {
-      Hour: _UpdateHour,
-      Minute:_UpdateMinute,
-      Day:_UpdateDay,
-      Month:_UpdateMonth
-
-    }
-  },{
-      sort: {_id: -1},
-      upsert: true
-  },(err, result) => {
-    if (err) return res.send(err)
-  });
-}
-
-exports.EmployeeWorkTimeAndStatus = function(UserName,WorkStatus,BrandTitle,BrandName,BrandPlace)
+// 新增上下班資訊
+exports.EmployeeWorkTimeAndStatus = function(OnlyID,UserName,WorkStatus)
 {
   var Work_Year = moment().format('YYYY');
   var Work_Month = moment().format('MM');
@@ -70,36 +29,21 @@ exports.EmployeeWorkTimeAndStatus = function(UserName,WorkStatus,BrandTitle,Bran
   var Work_Hour = moment().format('HH');
   var Work_Minute = moment().format('mm');
   var SalaryStatus = false;
-  db.collection('WorkHour').save({uniID:Date.now(),name:UserName,UserBrandTitle:BrandTitle,UserBrandName:BrandName,UserBrandPlace:BrandPlace ,status:WorkStatus,Year:Work_Year,Month:Work_Month,Day:Work_Day,Hour:Work_Hour,Minute:Work_Minute,SalaryCountStatus:SalaryStatus},function(err,result){
-    if(err)return console.log(err);
+  dbwork.collection('workperiod').save({TID:Date.now(),uniID:OnlyID,name:UserName,status:WorkStatus,Year:Work_Year,Month:Work_Month,Day:Work_Day,Hour:Work_Hour,Minute:Work_Minute,SalaryCountStatus:SalaryStatus},function(err,result){
+     if(err)return console.log(err);
   });
 }
 
-// 用來新增每個人的 token 以及相對應的名稱、上下班狀態、品牌職稱、品牌名稱、品牌地點
-exports.AddUserTokenRelatedInformationFunction = function(DeviceID,UserToken,UserName,WorkStatus,BrandTitle,BrandName,BrandPlace,Account,PassWord)
-{
-  dbtoken.collection('usertokenrelatedinformationcollection').save({uniID:Date.now(),deviceid:DeviceID,usertoken:UserToken,name:UserName,status:WorkStatus,UserBrandTitle:BrandTitle,UserBrandName:BrandName,UserBrandPlace:BrandPlace,account:Account,password:PassWord},function(err,result){
-    if(err)return console.log(err);
-  });
-}
-
-// 用來新增每個人的 token 以及相對應的名稱、上下班狀態、品牌職稱、品牌名稱、品牌地點
-exports.AddMemberInformationFunction = function(UserName,BrandTitle,BrandName,BrandPlace,Account,PassWord)
-{
-  dbtoken.collection('memberinformationcollection').save({uniID:Date.now(),name:UserName,UserBrandTitle:BrandTitle,UserBrandName:BrandName,UserBrandPlace:BrandPlace,account:Account,password:PassWord},function(err,result){
-    if(err)return console.log(err);
-  });
-}
-  
+// 透過 deviceID 和 token 來確認 uniID、name、status
 exports.CheckDeviceIDAndToken = function(DeviceID,Token)
 {
       console.log( 'DeviceID = ',DeviceID,' Token = ',Token);
       return new Promise(function(resolve, reject) 
       {
           var collection = dbtoken.collection('usertokenrelatedinformationcollection');
-
-          collection.findOne({ deviceid:DeviceID,usertoken:Token}, function(err, data ) 
+          collection.findOne({ deviceid:DeviceID,usertoken:Token}, function(err, data )
           {
+              console.log(data);
               if (err) { 
                   reject(err);
               } else {
@@ -107,6 +51,22 @@ exports.CheckDeviceIDAndToken = function(DeviceID,Token)
               }
           });
       });
+ }
+
+// 用來新增每個人的 unitoken、deviceID、上下班狀態、
+exports.AddUserTokenRelatedInformationFunction = function(OnlyId,DeviceID,UserToken,UserName,WorkStatus)
+{
+  dbtoken.collection('usertokenrelatedinformationcollection').save({uniID:OnlyId,deviceid:DeviceID,usertoken:UserToken,name:UserName,status:WorkStatus},function(err,result){
+    if(err)return console.log(err);
+  });
+}
+
+// 用來新增每個人的帳號和密碼和產生唯一碼
+exports.AddMemberInformationFunction = function(UserName,Account,PassWord)
+{
+  dbtoken.collection('memberinformationcollection').save({uniID:Date.now(),name:UserName,account:Account,password:PassWord},function(err,result){
+    if(err)return console.log(err);
+  });
 }
 
 // 若是要使用uniID當作查詢索引，需要透過 parseInt 來把變數變成int
@@ -127,10 +87,13 @@ exports.GetUniIDAndUseItAsQueryParameter = function(UniID)
       }); 
 }
 
+// 計算員工薪水
 exports.EmployeeSalaryCount = function()
 {
   var daily_salary,workPeriod,onlineTime,offlineTime;
-  db.collection('WorkHour').find().toArray(function(err, results) {
+  // db.collection('WorkHour').find().toArray(function(err, results) {
+  dbwork.collection('workperiod').find().toArray(function(err, results) {
+      // console.log('results=',results);
       for(var i=0; i<results.length; i++)
       {  
         hour_checkout = 0;
@@ -146,11 +109,12 @@ exports.EmployeeSalaryCount = function()
               offlineTime = results[j].Year+'/'+results[j].Month+'/'+results[j].Day+" "+results[j].Hour+':'+results[j].Minute;
               workPeriod = (parseInt(results[j].Hour,10)*60+parseInt(results[j].Minute,10))-(parseInt(results[i].Hour,10)*60+parseInt(results[i].Minute,10));
               dailySalary = Math.round(workPeriod*133/60, 10);
-
-              db.collection('CountSalary').save({uniID:Date.now(),name:results[i].name,UserBrandTitle:results[i].UserBrandTitle,UserBrandName:results[i].UserBrandName,UserBrandPlace:results[i].UserBrandPlace,onlineTiming:onlineTime,offLineTiming:offlineTime,WorkPeriod:workPeriod,DailySalary:dailySalary},function(err,result){
+              dbwork.collection('CountSalary').save({TID:Date.now(),uniID:results[i].uniID,name:results[i].name,onlineTiming:onlineTime,offLineTiming:offlineTime,WorkPeriod:workPeriod,DailySalary:dailySalary},function(err,result){
+              //db.collection('CountSalary').save({uniID:Date.now(),name:results[i].name,UserBrandTitle:results[i].UserBrandTitle,UserBrandName:results[i].UserBrandName,UserBrandPlace:results[i].UserBrandPlace,onlineTiming:onlineTime,offLineTiming:offlineTime,WorkPeriod:workPeriod,DailySalary:dailySalary},function(err,result){
                 if(err)return console.log(err);
               });
-              db.collection('WorkHour').findOneAndUpdate({uniID:parseInt(results[i].uniID,10)},{
+              dbwork.collection('workperiod').findOneAndUpdate({TID:parseInt(results[i].TID,10)},{
+              //db.collection('WorkHour').findOneAndUpdate({uniID:parseInt(results[i].uniID,10)},{ 
                 $set: 
                 {
                   SalaryCountStatus: true,
@@ -160,7 +124,8 @@ exports.EmployeeSalaryCount = function()
               },(err, result) => {
                 if (err) return res.send(err)
               });
-              db.collection('WorkHour').findOneAndUpdate({uniID:parseInt(results[j].uniID,10)},{
+              //db.collection('WorkHour').findOneAndUpdate({uniID:parseInt(results[j].uniID,10)},{
+              dbwork.collection('workperiod').findOneAndUpdate({TID:parseInt(results[j].TID,10)},{
                 $set: 
                 {
                   SalaryCountStatus: true,
@@ -177,15 +142,44 @@ exports.EmployeeSalaryCount = function()
   });
 }
 
-exports.AddPurchaseItem = function(ProductName,ProductClasee,ProductUnit,ProductPrice,ProductNote,ProductAmount)
+exports.DeleteUserData = function(_UniqueID,_DeleteType)
 {
-  var PurchaseYear = moment().format('YYYY');
-  var PurchaseMonth = moment().format('MM');
-  var PurchaseDay = moment().format('DD');
-  var PurchaseTotal = parseInt(ProductPrice,10) * parseInt(ProductAmount,10) ;
-  var MainTag=0 , SecondTag=0 , ThirdTag=0 ,FouthTag=0 ;
-  console.log('ProductAmount=',ProductAmount);
-  db.collection('PurchaseList').save({uniID:Date.now(),productname:ProductName,productclass:ProductClasee,productunit:ProductUnit,productamount:ProductAmount,productprice:ProductPrice,producttotal:PurchaseTotal,productnote:ProductNote,Year:PurchaseYear,Month:PurchaseMonth,Day:PurchaseDay,maintag:MainTag,secondtag:SecondTag,thirdtag:ThirdTag,fouthtag:FouthTag},function(err,result){
-    if(err)return console.log(err);
+  if(_DeleteType == 'Setting')
+  {
+    dbwork.collection('workperiod').findOneAndDelete({TID:parseInt(_UniqueID,10)},
+    (err, result) => {
+      if (err) return res.send(500, err);
+    })
+  }
+  else if(_DeleteType == 'Salary')
+  {
+    dbwork.collection('CountSalary').findOneAndDelete({TID:parseInt(_UniqueID,10)},
+      (err, result) => {
+        if (err) return res.send(500, err);
+      })
+  }
+
+}
+
+exports.UpdateUserData = function(_UniqueID,_UpdateHour,_UpdateMinute,_UpdateDay,_UpdateMonth)
+{ 
+  console.log('_UniqueID=',_UniqueID);
+  console.log('_UpdateHour=',_UpdateHour);
+  console.log('_UpdateMinute=',_UpdateMinute);
+  dbwork.collection('workperiod').findOneAndUpdate({TID:parseInt(_UniqueID,10)},{
+    $set: 
+    {
+      Hour: _UpdateHour,
+      Minute:_UpdateMinute,
+      Day:_UpdateDay,
+      Month:_UpdateMonth
+
+    }
+  },{
+      sort: {_id: -1},
+      upsert: false
+  },(err, result) => {
+    if (err) return res.send(err)
   });
 }
+

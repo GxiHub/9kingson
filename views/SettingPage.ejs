@@ -12,11 +12,9 @@
 	<table border='1'>
 	<tbody>
 	      <td> 刪除 </td>
+	      <td> 時間碼 </td>
 	      <td> 唯一碼 </td>
 	      <td> 員工姓名 </td>
-	      <td> 品牌職位 </td>
-	      <td> 品牌名稱 </td>
-	      <td> 品牌位置 </td>
 	      <td> 上班狀況 </td>
 	      <td> 年 </td>  
 	      <td> 月 </td>  
@@ -29,14 +27,12 @@
 		<tr>
 		   <td><form action="/delete/" method="POST">
 		   			<input type="hidden" placeholder="DeleteType" name="DeleteType" value="Setting">
-		      		<input type="hidden" placeholder="UniqueID" name="UniqueID" value=<%= WorkHour[i].uniID %>>
+		      		<input type="hidden" placeholder="UniqueID" name="TID" value=<%= WorkHour[i].TID %>>
 		      		<button type="submit">刪除</button>
 		  </form></td>
+		  <td><%= WorkHour[i].TID %></td>
 	      <td><%= WorkHour[i].uniID %></td>
 	      <td><%= WorkHour[i].name %></td>
-	      <td><%= WorkHour[i].UserBrandTitle %></td>
-	      <td><%= WorkHour[i].UserBrandName %></td>
-	      <td><%= WorkHour[i].UserBrandPlace %></td>
 	      <td><%= WorkHour[i].status %></td>
 	      <td><%= WorkHour[i].Year %></td>
 	      <td><%= WorkHour[i].Month %></td>
@@ -46,13 +42,13 @@
 	      <td><%= WorkHour[i].SalaryCountStatus %></td>
 	      <td>
 	      	  <form action="/update/" method="POST">
-	      	  <input type="hidden" placeholder="UniqueID" name="UniqueID" value=<%= WorkHour[i].uniID %>>
+	      	  <input type="hidden" placeholder="UniqueID" name="TID" value=<%= WorkHour[i].TID %>>
 
 		      <select name="updatemonth">
 			  <option value="0">0</option><option value="1">1</option>
 			  <option value="2">2</option><option value="3">3</option>
 			  <option value="4">4</option><option value="5">5</option>
-			  <option selected value="5">5</option><option value="6">6</option>
+			  <option value="5">5</option><option  selected value="6">6</option>
 			  <option value="7">7</option><option value="8">8</option>
 			  <option value="9">9</option><option value="10">10</option>
 			  <option value="11">11</option><option value="12">12</option>
@@ -62,27 +58,26 @@
 			  <option value="0">0</option><option value="1">1</option>
 			  <option value="2">2</option><option value="3">3</option>
 			  <option value="4">4</option><option value="5">5</option>
-			  <option value="5">5</option><option value="6">6</option>
-			  <option value="7">7</option><option value="8">8</option>
-			  <option value="9">9</option><option value="10">10</option>
-			  <option value="11">11</option><option value="12">12</option>
-			  <option value="13">13</option><option value="14">14</option>
-			  <option selected value="15">15</option><option value="16">16</option>
-			  <option value="17">17</option><option value="18">18</option>
-			  <option value="19">19</option><option value="20">20</option>
-			  <option value="21">21</option><option value="22">22</option>
-			  <option value="23">23</option><option value="24">24</option>
-			  <option value="25">25</option><option value="26">26</option>
-			  <option value="27">27</option><option value="28">28</option>
-			  <option value="29">29</option><option value="30">30</option>
-			  <option value="31">31</option>
+			  <option value="6">6</option><option value="7">7</option>
+			  <option value="8">8</option><option value="9">9</option>
+			  <option value="10">10</option><option value="11">11</option>
+			  <option value="12">12</option><option value="13">13</option>
+			  <option value="14">14</option><option selected value="15">15</option>
+			  <option value="16">16</option><option value="17">17</option>
+			  <option value="18">18</option><option value="19">19</option>
+			  <option value="20">20</option><option value="21">21</option>
+			  <option value="22">22</option><option value="23">23</option>
+			  <option value="24">24</option><option value="25">25</option>
+			  <option value="26">26</option><option value="27">27</option>
+			  <option value="28">28</option><option value="29">29</option>
+			  <option value="30">30</option><option value="31">31</option>
 		      </select>
 
 		      <select name="updathour">
 			  <option value="5">5</option><option value="6">6</option>
 			  <option value="7">7</option><option value="8">8</option>
 			  <option value="9">9</option><option value="10">10</option>
-			  <option value="11">11</option><option value="12">12</option>
+			  <option value="11">11</option><option  selected value="12">12</option>
 			  <option value="13">13</option><option value="14">14</option>
 			  <option value="15">15</option><option value="16">16</option>
 			  <option value="17">17</option><option value="18">18</option>
