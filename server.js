@@ -49,7 +49,7 @@ app.get('/GetTokenToServer/',function(req,res){
             if(items != null)
             {
                     SettingPage.EmployeeWorkTimeAndStatus(items.uniID,items.name,items.status);
-                    var body = {'status':{'code':'success','msg':items.status}};
+                    var body = {'status':{'code':'S0000','msg':items.status}};
                     console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);          
             }
             else
@@ -67,16 +67,16 @@ app.get('/GetTokenToServer/',function(req,res){
 app.get('/FisrtLoginAndReturnMemberToken/',function(req,res){
   dbtoken.collection('memberinformationcollection').findOne({'account':req.headers['account'],"password":req.headers['password']},function(err, results) {
     if(results==null){ json = { 'status':{'code':'E0002','msg':'帳號或密碼有錯，請重新輸入'},'data':results}; }
-    else{ json = { 'status':{'code':'success','msg':'帳號密碼正確'},'data':results.uniID};}
+    else{ json = { 'status':{'code':'S0000','msg':'帳號密碼正確'},'data':results.uniID};}
         var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
 });
 
 //透過帳號與密碼比對資料庫，若正確則返回一組 token
 app.get('/GetMemberBrandInformation/',function(req,res){
-  dbtoken.collection('memberbrandinformation').findOne({'account':req.headers['uniID']},function(err, results) {
+  dbtoken.collection('memberbrandinformation').find({'uniID':req.headers['uniid']},{_id:0,uniID:0,name:0}).toArray(function(err, results) {
     if(results==null){ json = { 'status':{'code':'E0003','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
-    else{ json = { 'status':{'code':'success','msg':'唯一碼正確'},'data':results};}
+    else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
         var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
 });
@@ -90,8 +90,8 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
             if(items != null)
             {
                     console.log(' items.name = ',items.name);
-                    dbwork.collection('CountSalary').find({'name':items.name}).toArray(function(err, results) {
-                      json = { 'status':{'code':'success','msg':'唯一碼正確'},'data':results};
+                    dbwork.collection('CountSalary').find({'name':items.name},{_id:0,TID:0,uniID:0,name:0}).toArray(function(err, results) {
+                      json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};
                       var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
                     });           
             }
@@ -127,9 +127,10 @@ app.post('/AddMemberBrandInformation/',function(req,res){
 
 // 檢查上班情形
 app.get('/CheckSettingInformation/',function(req,res){
-  console.log('req.query.UserName = ',req.query.UserName);
-  //db.collection.find( { field: { $gt: value1, $lt: value2 } } );
-  dbtoken.collection('usertokenrelatedinformationcollection').find({'name':req.query.UserName}).toArray(function(err, results) {
+  // console.log('req.query.UserName = ',req.query.UserName);
+  var a='6';
+  //db.collection.find( { field: { $gt: value1, $lt: value2 } } );city: { $in:['NEW YORK'] } 
+  dbwork.collection('CountSalary').find({'onlineTiming':new RegExp(a),'name':'小香'},{_id:0,uniID:0,deviceid:0}).toArray(function(err, results) {
     json = { 'status':{'code':'success'},'data':results};
     var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
