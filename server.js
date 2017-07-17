@@ -81,7 +81,6 @@ app.get('/GetMemberBrandInformation/',function(req,res){
   });
 });
 
-
 // 傳遞 uniID 當作索引來查詢員工姓名，再查詢出員工上班狀況
 app.get('/QueryPersonalSalaryList/',function(req,res){
     console.log(' req.headers[uniid] = ',req.headers['uniid']);
@@ -90,7 +89,7 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
             if(items != null)
             {
                     console.log(' items.name = ',items.name);
-                    dbwork.collection('CountSalary').find({'name':items.name},{_id:0,TID:0,uniID:0,name:0}).toArray(function(err, results) {
+                    dbwork.collection('CountSalary').find({'name':items.name},{_id:0,TID:0,uniID:0,name:0,WorkPeriod:0,DailySalary:0}).toArray(function(err, results) {
                       json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};
                       var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
                     });           
@@ -104,6 +103,15 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
         }, function(err) {
           console.error('The promise was rejected', err, err.stack);
     });  
+});
+
+// 查詢員工單月薪水資訊
+app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
+  dbwork.collection('monthlysalaryinformation').find({'uniID':req.headers['uniid']},{_id:0,TID:0,uniID:0}).toArray(function(err, results) {
+    if(results==null){ json = { 'status':{'code':'E0005','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
+    else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
+        var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+  });
 });
 
 // 如果需要透過網頁設定的話可以使用 req.body，如果要透過 postman 就要使用 req.query
@@ -121,19 +129,48 @@ app.post('/AddMemberInformationFunction/',function(req,res){
 
 // 透過postman新增會員品牌店務資料
 app.post('/AddMemberBrandInformation/',function(req,res){
-    var uniID = req.query.uniID;var namePass = req.query.username;var userBrandtitle = req.query.userbrandtitle;var userBrandname = req.query.userbrandname;var userBrandplace = req.query.userbrandplace;
-    SettingPage.AddMemberBrandInformation(uniID,namePass,userBrandtitle,userBrandname,userBrandplace);
+    var uniID = req.query.uniID;var namePass = req.query.username;var userBrandtitle = req.query.userbrandtitle;var userBrandname = req.query.userbrandname;var userBrandplace = req.query.userbrandplace;var monthsalary = req.query.monthsalary;var hoursalary = req.query.hoursalary;
+    SettingPage.AddMemberBrandInformation(uniID,namePass,userBrandtitle,userBrandname,userBrandplace,monthsalary,hoursalary);
 });
 
 // 檢查上班情形
 app.get('/CheckSettingInformation/',function(req,res){
   // console.log('req.query.UserName = ',req.query.UserName);
-  var a='6';
-  //db.collection.find( { field: { $gt: value1, $lt: value2 } } );city: { $in:['NEW YORK'] } 
-  dbwork.collection('CountSalary').find({'onlineTiming':new RegExp(a),'name':'小香'},{_id:0,uniID:0,deviceid:0}).toArray(function(err, results) {
+  var month = '6';
+  var year = '2017';
+  var b=year+'/'+month;
+  dbwork.collection('CountSalary').find({'onlineTiming':new RegExp(b),'name':'小香'},{_id:0,TID:0,name:0,uniID:0,deviceid:0,DailySalary:0}).toArray(function(err, results) {
     json = { 'status':{'code':'success'},'data':results};
     var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
+});
+
+app.get('/CalculateMonthlySalaryForEachEmployee/',function(req,res){
+    console.log(' req.headers[uniid] = ',req.headers['uniid']);
+    var month = '6';
+    var year = '2017';
+    var b=year+'/'+month;
+    SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniID']).then(function(items) 
+    {
+            if(items != null)
+            {
+                    //console.log(' items = ',items);
+                    dbwork.collection('CountSalary').find({'name':items.name,'onlineTiming':new RegExp(b)},{_id:0,TID:0,uniID:0,onlineTiming:0,offLineTiming:0,DailySalary:0,name:0}).toArray(function(err, results) {
+                            var count = 0 ; var totalSalary = 0;var OverWorkTime = 0; var LateWorkTime = 0;var ExtraBonus = 0; var SpecialBonus = 0;
+                            while(results[count]!=null)
+                            {  
+                              totalSalary = totalSalary + parseInt(results[count].WorkPeriod,10);
+                              count++;
+                            }
+                            var CalculateMonth = parseInt(items.userhoursalary,10) * totalSalary / 60;
+                            var FinalSalary = parseInt(CalculateMonth,10) - OverWorkTime - LateWorkTime + ExtraBonus + SpecialBonus;                          
+                            SettingPage.AddEmployeeMonthlySalaryInformation(req.headers['uniid'],items.name,items.userbrandtitle,parseInt(CalculateMonth,10),OverWorkTime,LateWorkTime,ExtraBonus,SpecialBonus,FinalSalary);
+                    });           
+            }
+        }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    }); 
+    res.send('Calculate Monthly Salary');
 });
 
 app.post('/CheckSalaryPeriod/',function(req,res){
@@ -170,8 +207,3 @@ app.post('/delete/', (req, res) => {
     res.redirect('/');
   }
 });
-
-
-
-
-

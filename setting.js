@@ -20,6 +20,15 @@ MongoClient.connect('mongodb://9kingson:9kingson@ds149382.mlab.com:49382/workinf
 
 var Promise = require('rsvp').Promise;
 
+
+// 新增每個月員工新水資訊
+exports.AddEmployeeMonthlySalaryInformation = function(OnlyID,UserName,UserBrandTitle,CalculateMonth,OverWorkTime,LateWorkTime,ExtraBonus,SpecialBonus,TotalMonthSalaty)
+{
+  dbwork.collection('monthlysalaryinformation').save({TID:Date.now(),uniID:OnlyID,name:UserName,userbrandtitle:UserBrandTitle,calculatemonth:CalculateMonth,overworktime:OverWorkTime,lateworktime:LateWorkTime,extrabonus:ExtraBonus,specialbonus:SpecialBonus,totalmonthsalaty:TotalMonthSalaty},function(err,result){
+     if(err)return console.log(err);
+  });
+}
+
 // 新增上下班資訊
 exports.EmployeeWorkTimeAndStatus = function(OnlyID,UserName,WorkStatus)
 {
@@ -70,9 +79,9 @@ exports.AddMemberInformationFunction = function(UserName,Account,PassWord)
 }
 
 // 用來新增每個人的店務名稱、品牌、地點
-exports.AddMemberBrandInformation = function(UniID,UserName,UserBrandtitle,UserBrandname,UserBrandplace)
+exports.AddMemberBrandInformation = function(UniID,UserName,UserBrandtitle,UserBrandname,UserBrandplace,MonthSalary,HourSalary)
 {
-  dbtoken.collection('memberbrandinformation').save({uniID:UniID,name:UserName,userbrandtitle:UserBrandtitle,userbrandname:UserBrandname,userbrandplace:UserBrandplace},function(err,result){
+  dbtoken.collection('memberbrandinformation').save({uniID:UniID,name:UserName,userbrandtitle:UserBrandtitle,userbrandname:UserBrandname,userbrandplace:UserBrandplace,usermonthsalary:MonthSalary,userhoursalary:HourSalary},function(err,result){
     if(err)return console.log(err);
   });
 }
@@ -80,11 +89,28 @@ exports.AddMemberBrandInformation = function(UniID,UserName,UserBrandtitle,UserB
 // 若是要使用uniID當作查詢索引，需要透過 parseInt 來把變數變成int
 exports.GetUniIDAndUseItAsQueryParameter = function(UniID)
 {
-      console.log( 'UniID = ',UniID);
+      console.log( 'GetUniIDAndUseItAsQueryParameter->UniID = ',UniID);
       return new Promise(function(resolve,reject)
       {
           var collection = dbtoken.collection('memberinformationcollection');
           collection.findOne({ uniID:parseInt(UniID,10)}, function(err, data ) 
+          {
+              if (err) { 
+                  reject(err);
+              } else {
+                  resolve(data);
+              }
+          });
+      }); 
+}
+
+exports.PromiseGetMonthSalaryOrHourSalary = function(UniID)
+{
+      console.log( 'PromiseGetMonthSalaryOrHourSalary->PromiseUniID = ',UniID);
+      return new Promise(function(resolve,reject)
+      {
+          var collection = dbtoken.collection('memberbrandinformation');
+          collection.findOne({uniID:UniID}, function(err, data ) 
           {
               if (err) { 
                   reject(err);
