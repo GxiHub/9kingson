@@ -83,13 +83,16 @@ app.get('/GetMemberBrandInformation/',function(req,res){
 
 // 傳遞 uniID 當作索引來查詢員工姓名，再查詢出員工上班狀況
 app.get('/QueryPersonalSalaryList/',function(req,res){
+    var month = req.headers['month'];
+    var year = req.headers['year'];
+    var b=year+'/'+month;
     console.log(' req.headers[uniid] = ',req.headers['uniid']);
     SettingPage.GetUniIDAndUseItAsQueryParameter(req.headers['uniid']).then(function(items) 
     {
             if(items != null)
             {
                     console.log(' items.name = ',items.name);
-                    dbwork.collection('CountSalary').find({'name':items.name},{_id:0,TID:0,uniID:0,name:0,WorkPeriod:0,DailySalary:0}).toArray(function(err, results) {
+                    dbwork.collection('CountSalary').find({'name':items.name,'onlineTiming':new RegExp(b)},{_id:0,TID:0,uniID:0,name:0,WorkPeriod:0,DailySalary:0}).toArray(function(err, results) {
                       json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};
                       var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
                     });           
@@ -107,7 +110,10 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
 
 // 查詢員工單月薪水資訊
 app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
-  dbwork.collection('monthlysalaryinformation').find({'uniID':req.headers['uniid']},{_id:0,TID:0,uniID:0}).toArray(function(err, results) {
+  var month = req.headers['month'];
+  var year = req.headers['year'];
+  var b=year+'/'+month;
+  dbwork.collection('monthlysalaryinformation').find({'uniID':req.headers['uniid'],'monthperiod':new RegExp(b)},{_id:0,TID:0,uniID:0}).toArray(function(err, results) {
     if(results==null){ json = { 'status':{'code':'E0005','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
     else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
         var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
@@ -150,7 +156,7 @@ app.get('/CalculateMonthlySalaryForEachEmployee/',function(req,res){
     var month = '6';
     var year = '2017';
     var b=year+'/'+month;
-    SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniID']).then(function(items) 
+    SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
     {
             if(items != null)
             {
@@ -164,7 +170,7 @@ app.get('/CalculateMonthlySalaryForEachEmployee/',function(req,res){
                             }
                             var CalculateMonth = parseInt(items.userhoursalary,10) * totalSalary / 60;
                             var FinalSalary = parseInt(CalculateMonth,10) - OverWorkTime - LateWorkTime + ExtraBonus + SpecialBonus;                          
-                            SettingPage.AddEmployeeMonthlySalaryInformation(req.headers['uniid'],items.name,items.userbrandtitle,parseInt(CalculateMonth,10),OverWorkTime,LateWorkTime,ExtraBonus,SpecialBonus,FinalSalary);
+                            SettingPage.AddEmployeeMonthlySalaryInformation(req.headers['uniid'],b,items.name,items.userbrandtitle,parseInt(CalculateMonth,10),OverWorkTime,LateWorkTime,ExtraBonus,SpecialBonus,FinalSalary);
                     });           
             }
         }, function(err) {

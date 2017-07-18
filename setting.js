@@ -22,9 +22,9 @@ var Promise = require('rsvp').Promise;
 
 
 // 新增每個月員工新水資訊
-exports.AddEmployeeMonthlySalaryInformation = function(OnlyID,UserName,UserBrandTitle,CalculateMonth,OverWorkTime,LateWorkTime,ExtraBonus,SpecialBonus,TotalMonthSalaty)
+exports.AddEmployeeMonthlySalaryInformation = function(OnlyID,YearMonth,UserName,UserBrandTitle,CalculateMonth,OverWorkTime,LateWorkTime,ExtraBonus,SpecialBonus,TotalMonthSalaty)
 {
-  dbwork.collection('monthlysalaryinformation').save({TID:Date.now(),uniID:OnlyID,name:UserName,userbrandtitle:UserBrandTitle,calculatemonth:CalculateMonth,overworktime:OverWorkTime,lateworktime:LateWorkTime,extrabonus:ExtraBonus,specialbonus:SpecialBonus,totalmonthsalaty:TotalMonthSalaty},function(err,result){
+  dbwork.collection('monthlysalaryinformation').save({TID:Date.now(),monthperiod:YearMonth,uniID:OnlyID,name:UserName,userbrandtitle:UserBrandTitle,calculatemonth:CalculateMonth,overworktime:OverWorkTime,lateworktime:LateWorkTime,extrabonus:ExtraBonus,specialbonus:SpecialBonus,totalmonthsalaty:TotalMonthSalaty},function(err,result){
      if(err)return console.log(err);
   });
 }
