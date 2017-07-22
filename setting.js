@@ -29,6 +29,14 @@ exports.AddEmployeeMonthlySalaryInformation = function(OnlyID,YearMonth,UserName
   });
 }
 
+// 新增員工上班時數
+exports.AddEmployeeWorkSchedule = function(UniID,Brand,UserName,checkPeriodYear,checkPeriodMonth,checkPeriodDay,checkPeriodOnlineHour,checkPeriodOnlineMinute,checkPeriodOfflineHour,checkPeriodOfflineMinute)
+{
+  dbwork.collection('employeeworkschedule').save({TID:Date.now(),uniID:UniID,userbrandname:Brand,name:UserName,workyear:checkPeriodYear,workmonth:checkPeriodMonth,workday:checkPeriodDay,onlinehour:checkPeriodOnlineHour,onlineminute:checkPeriodOnlineMinute,offlinehour:checkPeriodOfflineHour,offlineminute:checkPeriodOfflineMinute},function(err,result){
+     if(err)return console.log(err);
+  });
+}
+
 // 新增上下班資訊
 exports.EmployeeWorkTimeAndStatus = function(OnlyID,UserName,WorkStatus)
 {
@@ -111,6 +119,23 @@ exports.PromiseGetMonthSalaryOrHourSalary = function(UniID)
       {
           var collection = dbtoken.collection('memberbrandinformation');
           collection.findOne({uniID:UniID}, function(err, data ) 
+          {
+              if (err) { 
+                  reject(err);
+              } else {
+                  resolve(data);
+              }
+          });
+      }); 
+}
+
+exports.PromiseGetBrandInfo = function(Name)
+{
+      console.log( 'PromiseGetMonthSalaryOrHourSalary->Name = ',Name);
+      return new Promise(function(resolve,reject)
+      {
+          var collection = dbtoken.collection('memberbrandinformation');
+          collection.findOne({name:Name}, function(err, data ) 
           {
               if (err) { 
                   reject(err);

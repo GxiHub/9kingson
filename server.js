@@ -120,6 +120,22 @@ app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
   });
 });
 
+// 查詢員工單月上班情形
+app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
+  var month = req.headers['month'];
+  var year = req.headers['year'];
+    SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
+    {
+        dbwork.collection('employeeworkschedule').find({'userbrandname':items.userbrandname,'workyear':year,'workmonth':month},{_id:0,TID:0,uniID:0}).toArray(function(err, results) {
+           if(results==null){ json = { 'status':{'code':'E0006','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
+           else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
+           var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+        });
+    }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    });  
+});
+
 // 如果需要透過網頁設定的話可以使用 req.body，如果要透過 postman 就要使用 req.query
 app.post('/AddUserTokenRelatedInformationBridge/',function(req,res){
     // var deviceID = req.body.deviceid;var UserToken = req.body.usertoken;var namePass = req.body.username;var statusPass = req.body.status;
@@ -137,6 +153,19 @@ app.post('/AddMemberInformationFunction/',function(req,res){
 app.post('/AddMemberBrandInformation/',function(req,res){
     var uniID = req.query.uniID;var namePass = req.query.username;var userBrandtitle = req.query.userbrandtitle;var userBrandname = req.query.userbrandname;var userBrandplace = req.query.userbrandplace;var monthsalary = req.query.monthsalary;var hoursalary = req.query.hoursalary;
     SettingPage.AddMemberBrandInformation(uniID,namePass,userBrandtitle,userBrandname,userBrandplace,monthsalary,hoursalary);
+});
+
+app.post('/AddEmployeeWorkSchedule/',function(req,res){
+    console.log(' req.body.checkName = ',req.body.checkName);
+    //SettingPage.PromiseGetBrandInfo(req.headers['name']).then(function(items) 
+    SettingPage.PromiseGetBrandInfo(req.body.checkName).then(function(items) 
+    {
+      console.log(' DeviceID is ',items.userbrandname, ' and ',items.uniID); 
+      SettingPage.AddEmployeeWorkSchedule(items.uniID,items.userbrandname,req.body.checkName,req.body.checkPeriodYear,req.body.checkPeriodMonth,req.body.checkPeriodDay,req.body.checkPeriodOnlineHour,req.body.checkPeriodOnlineMinute,req.body.checkPeriodOfflineHour,req.body.checkPeriodOffineMinute);
+    }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    });  
+    res.redirect('/');
 });
 
 // 檢查上班情形
@@ -183,6 +212,10 @@ app.post('/CheckSalaryPeriod/',function(req,res){
   dbwork.collection('CountSalary').find().toArray(function(err, results) {
       res.render('CheckSalaryPage.ejs',{SalaryList:results,PeriodYear:req.body.checkPeriodYear,PeriodMonth:req.body.checkPeriodMonth,CheckName:req.body.checkName});
   });
+});
+
+app.get('/DirectPageToAddEmployeeWorkSchedule/',function(req,res){
+    res.render('AddEmployeeWorkSchedule.ejs');
 });
 
 app.get('/Setting/',function(req,res){
