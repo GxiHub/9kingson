@@ -30,9 +30,9 @@ exports.AddEmployeeMonthlySalaryInformation = function(OnlyID,YearMonth,UserName
 }
 
 // 新增員工上班時數
-exports.AddEmployeeWorkSchedule = function(UniID,Brand,UserName,checkPeriodYear,checkPeriodMonth,checkPeriodDay,checkPeriodOnlineHour,checkPeriodOnlineMinute,checkPeriodOfflineHour,checkPeriodOfflineMinute)
+exports.AddEmployeeWorkSchedule = function(UniID,Brand,Place,UserName,checkPeriodYear,checkPeriodMonth,checkPeriodDay,checkPeriodOnlineHour,checkPeriodOnlineMinute,checkPeriodOfflineHour,checkPeriodOfflineMinute)
 {
-  dbwork.collection('employeeworkschedule').save({TID:Date.now(),uniID:UniID,userbrandname:Brand,name:UserName,workyear:checkPeriodYear,workmonth:checkPeriodMonth,workday:checkPeriodDay,onlinehour:checkPeriodOnlineHour,onlineminute:checkPeriodOnlineMinute,offlinehour:checkPeriodOfflineHour,offlineminute:checkPeriodOfflineMinute},function(err,result){
+  dbwork.collection('employeeworkschedule').save({TID:Date.now(),uniID:UniID,userbrandname:Brand,userbrandplace:Place,name:UserName,workyear:checkPeriodYear,workmonth:checkPeriodMonth,workday:checkPeriodDay,onlinehour:checkPeriodOnlineHour,onlineminute:checkPeriodOnlineMinute,offlinehour:checkPeriodOfflineHour,offlineminute:checkPeriodOfflineMinute},function(err,result){
      if(err)return console.log(err);
   });
 }

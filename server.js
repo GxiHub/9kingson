@@ -126,7 +126,7 @@ app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
   var year = req.headers['year'];
     SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
     {
-        dbwork.collection('employeeworkschedule').find({'userbrandname':items.userbrandname,'workyear':year,'workmonth':month},{_id:0,TID:0,uniID:0}).toArray(function(err, results) {
+        dbwork.collection('employeeworkschedule').find({'userbrandname':items.userbrandname,'userbrandplace':items.userbrandplace,'workyear':year,'workmonth':month},{_id:0,TID:0,uniID:0,userbrandname:0,userbrandplace:0,onlinehour:0,onlineminute:0,offlinehour:0,offlineminute:0}).toArray(function(err, results) {
            if(results==null){ json = { 'status':{'code':'E0006','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
            else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
@@ -161,7 +161,7 @@ app.post('/AddEmployeeWorkSchedule/',function(req,res){
     SettingPage.PromiseGetBrandInfo(req.body.checkName).then(function(items) 
     {
       console.log(' DeviceID is ',items.userbrandname, ' and ',items.uniID); 
-      SettingPage.AddEmployeeWorkSchedule(items.uniID,items.userbrandname,req.body.checkName,req.body.checkPeriodYear,req.body.checkPeriodMonth,req.body.checkPeriodDay,req.body.checkPeriodOnlineHour,req.body.checkPeriodOnlineMinute,req.body.checkPeriodOfflineHour,req.body.checkPeriodOffineMinute);
+      SettingPage.AddEmployeeWorkSchedule(items.uniID,items.userbrandname,items.userbrandplace,req.body.checkName,req.body.checkPeriodYear,req.body.checkPeriodMonth,req.body.checkPeriodDay,req.body.checkPeriodOnlineHour,req.body.checkPeriodOnlineMinute,req.body.checkPeriodOfflineHour,req.body.checkPeriodOffineMinute);
     }, function(err) {
           console.error('The promise was rejected', err, err.stack);
     });  
