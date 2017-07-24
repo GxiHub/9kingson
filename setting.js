@@ -37,6 +37,17 @@ exports.AddEmployeeWorkSchedule = function(UniID,Brand,Place,UserName,checkPerio
   });
 }
 
+// 新增單店公告
+exports.AddManageNews = function(News,Brand,Place)
+{
+  console.log( 'News = ',News);
+  console.log( 'Brand = ',Brand);
+  console.log( 'Place = ',Place);
+  dbwork.collection('managenews').save({TID:Date.now(),news:News,userbrandname:Brand,userbrandplace:Place},function(err,result){
+     if(err)return console.log(err);
+  });
+}
+
 // 新增上下班資訊
 exports.EmployeeWorkTimeAndStatus = function(OnlyID,UserName,WorkStatus)
 {
@@ -114,7 +125,7 @@ exports.GetUniIDAndUseItAsQueryParameter = function(UniID)
 
 exports.PromiseGetMonthSalaryOrHourSalary = function(UniID)
 {
-      console.log( 'PromiseGetMonthSalaryOrHourSalary->PromiseUniID = ',UniID);
+      console.log( 'PromiseGetMonthSalaryOrHourSalary->PromiseUniID new= ',UniID);
       return new Promise(function(resolve,reject)
       {
           var collection = dbtoken.collection('memberbrandinformation');
@@ -131,7 +142,7 @@ exports.PromiseGetMonthSalaryOrHourSalary = function(UniID)
 
 exports.PromiseGetBrandInfo = function(Name)
 {
-      console.log( 'PromiseGetMonthSalaryOrHourSalary->Name = ',Name);
+      console.log( 'PromiseGetBrandInfo->Name = ',Name);
       return new Promise(function(resolve,reject)
       {
           var collection = dbtoken.collection('memberbrandinformation');

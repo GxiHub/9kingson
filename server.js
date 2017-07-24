@@ -120,6 +120,22 @@ app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
   });
 });
 
+// 查詢單月公告
+// app.get('/GetManageNews/',function(req,res){
+//   var month = req.headers['month'];
+//   var year = req.headers['year'];
+//     SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
+//     {
+//         dbwork.collection('employeeworkschedule').find({'userbrandname':items.userbrandname,'userbrandplace':items.userbrandplace,'workyear':year,'workmonth':month},{_id:0,TID:0,uniID:0,userbrandname:0,userbrandplace:0,onlinehour:0,onlineminute:0,offlinehour:0,offlineminute:0}).toArray(function(err, results) {
+//            if(results==null){ json = { 'status':{'code':'E0006','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
+//            else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
+//            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+//         });
+//     }, function(err) {
+//           console.error('The promise was rejected', err, err.stack);
+//     });  
+// });
+
 // 查詢員工單月上班情形
 app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
   var month = req.headers['month'];
@@ -128,6 +144,23 @@ app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
     {
         dbwork.collection('employeeworkschedule').find({'userbrandname':items.userbrandname,'userbrandplace':items.userbrandplace,'workyear':year,'workmonth':month},{_id:0,TID:0,uniID:0,userbrandname:0,userbrandplace:0,onlinehour:0,onlineminute:0,offlinehour:0,offlineminute:0}).toArray(function(err, results) {
            if(results==null){ json = { 'status':{'code':'E0006','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
+           else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
+           var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
+        });
+    }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    });  
+});
+
+//查詢佈告欄
+app.get('/GetManageNews/',function(req,res){
+   console.log(' GetManageNews ');
+    SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
+    {
+        console.log(' items.userbrandname = ',items.userbrandname);
+        console.log(' items.userbrandplace = ',items.userbrandplace);
+        dbwork.collection('managenews').find({'userbrandname':items.userbrandname,'userbrandplace':items.userbrandplace},{_id:0,TID:0,userbrandname:0,userbrandplace:0}).toArray(function(err, results) {
+           if(results==null){ json = { 'status':{'code':'E0007','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
            else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
         });
@@ -162,6 +195,19 @@ app.post('/AddEmployeeWorkSchedule/',function(req,res){
     {
       console.log(' DeviceID is ',items.userbrandname, ' and ',items.uniID); 
       SettingPage.AddEmployeeWorkSchedule(items.uniID,items.userbrandname,items.userbrandplace,req.body.checkName,req.body.checkPeriodYear,req.body.checkPeriodMonth,req.body.checkPeriodDay,req.body.checkPeriodOnlineHour,req.body.checkPeriodOnlineMinute,req.body.checkPeriodOfflineHour,req.body.checkPeriodOffineMinute);
+    }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    });  
+    res.redirect('/');
+});
+
+// 透過postman新增單店公告
+app.get('/AddManageNews/',function(req,res){
+    var news = req.headers['news'];
+    SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
+    {
+      console.log(' item is ',items.userbrandname, ' and ',items.userbrandplace,  ' and ',news); 
+      SettingPage.AddManageNews(news,items.userbrandname,items.userbrandplace);
     }, function(err) {
           console.error('The promise was rejected', err, err.stack);
     });  
