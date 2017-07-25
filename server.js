@@ -84,6 +84,7 @@ app.get('/GetMemberBrandInformation/',function(req,res){
 // 傳遞 uniID 當作索引來查詢員工姓名，再查詢出員工上班狀況
 app.get('/QueryPersonalSalaryList/',function(req,res){
     var month = req.headers['month'];
+    if(month[0]==0){month=month[1];}
     var year = req.headers['year'];
     var b=year+'/'+month;
     console.log(' req.headers[uniid] = ',req.headers['uniid']);
@@ -111,6 +112,7 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
 // 查詢員工單月薪水資訊
 app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
   var month = req.headers['month'];
+  if(month[0]==0){month=month[1];}
   var year = req.headers['year'];
   var b=year+'/'+month;
   dbwork.collection('monthlysalaryinformation').find({'uniID':req.headers['uniid'],'monthperiod':new RegExp(b)},{_id:0,TID:0,uniID:0}).toArray(function(err, results) {
@@ -123,6 +125,7 @@ app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
 // 查詢員工單月上班情形
 app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
   var month = req.headers['month'];
+  if(month[0]==0){month=month[1];}
   var year = req.headers['year'];
     SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
     {
@@ -156,8 +159,10 @@ app.get('/GetManageNews/',function(req,res){
 // 查詢單日員工上班細項
 app.get('/GetSingleDayWorkScheduleDetail/',function(req,res){
   var month = req.headers['month'];
+  if(month[0]==0){month=month[1];}
   var year = req.headers['year'];
   var day = req.headers['day'];
+  if(day[0]==0){day=day[1];}
 
     SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
     {
