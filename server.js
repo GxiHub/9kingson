@@ -42,9 +42,9 @@ app.get('/',function(req,res){
 //透過手機端掃描二維條碼，並添加個人上下班時間
 app.get('/GetTokenToServer/',function(req,res){
     //body = Object.assign({}, results); 
-    console.log('req.headers.contenttype = ',req.headers['content-type']);console.log('req.headers.language = ',req.headers['accept-language']);console.log('req.headers.deviceid = ',req.headers['deviceid']);console.log('req.query.usertoken = ',req.headers['usertoken']);
+    console.log('req.headers.contenttype = ',req.headers['content-type']);console.log('req.headers.language = ',req.headers['accept-language']);console.log('req.headers.deviceid = ',req.headers['deviceid']);console.log('req.query.usertoken = ',req.query.usertoken);
     
-    SettingPage.CheckDeviceIDAndToken(req.headers['deviceid'],req.headers['usertoken']).then(function(items) 
+    SettingPage.CheckDeviceIDAndToken(req.headers['deviceid'],req.query.usertoken).then(function(items) 
     {
             if(items != null)
             {
@@ -93,7 +93,7 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
             if(items != null)
             {
                     console.log(' items.name = ',items.name);
-                    dbwork.collection('CountSalary').find({'name':items.name,'onlineTiming':new RegExp(b)},{_id:0,TID:0,uniID:0,name:0,WorkPeriod:0,DailySalary:0}).toArray(function(err, results) {
+                    dbwork.collection('CountSalary').find({'name':items.name,'onlineTiming':new RegExp(b)},{_id:0,TID:0,uniID:0,name:0,WorkPeriod:0,DailySalary:0}).toArray(function(err, results) {                
                       json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};
                       var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
                     });           
@@ -124,12 +124,32 @@ app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
 
 // 查詢員工單月上班情形
 app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
+  var arraylength = 0;
   var month = req.headers['month'];
   if(month[0]==0){month=month[1];}
   var year = req.headers['year'];
+  if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){ arraylength = 31; }
+  else if(month == 2){ arraylength = 28; }
+  else { arraylength = 30; }
+
     SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
     {
         dbwork.collection('employeeworkschedule').find({'userbrandname':items.userbrandname,'userbrandplace':items.userbrandplace,'workyear':year,'workmonth':month},{_id:0,TID:0,uniID:0,userbrandname:0,userbrandplace:0,onlinehour:0,onlineminute:0,offlinehour:0,offlineminute:0}).toArray(function(err, results) {
+           var count = 0;var arr =[];
+           for( var i = 0; i<arraylength; i++ ) {
+              var day = i + 1;
+              arr.push([]);
+              arr[i].push(month+'/'+day);
+           }
+           while(results[count]!=null)
+           {  
+              var indexleft = parseInt(results[count].workday,10)-1;
+              var indexright = results[count].name;
+              arr[indexleft].push(results[count].name);
+              count++;
+           }     
+           results = arr;
+           console.log(' arr = ',arr); 
            if(results==null){ json = { 'status':{'code':'E0006','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
            else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
@@ -280,6 +300,38 @@ app.get('/Setting/',function(req,res){
 app.get('/SalaryCount/',function(req,res){
   SettingPage.EmployeeSalaryCount();
 });
+
+app.post('/CheckEveryDayWorkStatus/',function(req,res){
+  console.log(' CheckEveryDayWorkStatus 1');
+    var month = req.body.checkPeriodMonth;
+    var year = req.body.checkPeriodYear;
+    var day = req.body.checkPeriodDay;
+    var b=year+'/'+month+'/'+day;
+    dbwork.collection('CountSalary').find({'onlineTiming':new RegExp(b)}).toArray(function(err, results) {
+          res.render('CheckEveryDayWorkStatus.ejs',{passvariable:results});
+    });
+});
+
+app.post('/CheckEveryMonthWorkStatus/',function(req,res){
+  console.log(' CheckEveryDayWorkStatus 2');
+    var month = req.body.checkPeriodMonth;
+    var year = req.body.checkPeriodYear;
+    var b=year+'/'+month;
+    if(req.body.checkName == '全部')
+    {
+      dbwork.collection('CountSalary').find({'onlineTiming':new RegExp(b)}).toArray(function(err, results) {
+          res.render('CheckEveryDayWorkStatus.ejs',{passvariable:results});
+      });
+    }
+    else
+    {
+      dbwork.collection('CountSalary').find({'name':req.body.checkName,'onlineTiming':new RegExp(b)}).toArray(function(err, results) {
+          res.render('CheckEveryMonthWorkStatus.ejs',{passvariable:results});
+      });
+    }
+});
+
+
 
 app.post('/update/', (req, res) => {
   SettingPage.UpdateUserData(req.body.TID,req.body.updathour,req.body.updateminute,req.body.updateday,req.body.updatemonth);
