@@ -301,31 +301,61 @@ app.get('/SalaryCount/',function(req,res){
   SettingPage.EmployeeSalaryCount();
 });
 
+app.post('/CheckEmployeeWorkSchedule/',function(req,res){
+    var month = req.body.checkPeriodMonth;
+    var year = req.body.checkPeriodYear;
+    var arraylength = 0;
+    if(month == null){  
+      year = moment().format('YYYY');
+      month = moment().format('MM');
+    }
+    
+  if(month == '01' || month == '03' || month == '05' || month == '07' || month == '08' || month == '10' || month == '12'){ arraylength = 31; }
+  else if(month == '02'){ arraylength = 28; }
+  else { arraylength = 31; }
+   console.log(' arraylength = ',arraylength);
+  dbwork.collection('employeeworkschedule').find({'workyear':year,'workmonth':month}).toArray(function(err, results) {
+           var count = 0;var arr =[];
+           for( var i = 0; i<arraylength; i++ ) {
+              var day = i + 1;
+              arr.push([]);
+           }
+           while(results[count]!=null)
+           {  
+              var indexleft = parseInt(results[count].workday,10)-1;
+              // console.log(' indexleft = ',indexleft);
+              var indexright = results[count].name;
+              // console.log(' indexright = ',indexright);
+              arr[indexleft].push(indexright);
+              count++;
+           }     
+            console.log(' arr = ',arr); 
+    res.render('CheckWorkSchedule.ejs',{WorkSchedule:results});
+  });
+});
+
 app.post('/CheckEveryDayWorkStatus/',function(req,res){
-  console.log(' CheckEveryDayWorkStatus 1');
     var month = req.body.checkPeriodMonth;
     var year = req.body.checkPeriodYear;
     var day = req.body.checkPeriodDay;
-    var b=year+'/'+month+'/'+day;
-    dbwork.collection('CountSalary').find({'onlineTiming':new RegExp(b)}).toArray(function(err, results) {
+    dbwork.collection('workperiod').find({'Year':year,'Month':month,'Day':day}).toArray(function(err, results) {
           res.render('CheckEveryDayWorkStatus.ejs',{passvariable:results});
     });
 });
 
 app.post('/CheckEveryMonthWorkStatus/',function(req,res){
-  console.log(' CheckEveryDayWorkStatus 2');
     var month = req.body.checkPeriodMonth;
     var year = req.body.checkPeriodYear;
     var b=year+'/'+month;
     if(req.body.checkName == '全部')
     {
-      dbwork.collection('CountSalary').find({'onlineTiming':new RegExp(b)}).toArray(function(err, results) {
+      dbwork.collection('workperiod').find({'Year':year,'Month':month}).toArray(function(err, results) {
           res.render('CheckEveryDayWorkStatus.ejs',{passvariable:results});
       });
     }
     else
     {
-      dbwork.collection('CountSalary').find({'name':req.body.checkName,'onlineTiming':new RegExp(b)}).toArray(function(err, results) {
+      dbwork.collection('workperiod').find({'name':req.body.checkName,'Year':year,'Month':month}).toArray(function(err, results) {
           res.render('CheckEveryMonthWorkStatus.ejs',{passvariable:results});
       });
     }

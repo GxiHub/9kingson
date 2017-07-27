@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CheckEveryMonthWorkStatus</title>
+</head>
+<body>
+
+	<form action="/CheckEveryMonthWorkStatus/" method="POST">
+		<select name="checkPeriodYear">
+			<option selected value="2017">2017</option>
+		</select>
+		<select name="checkPeriodMonth">
+			<option value="01">1</option><option  value="02">2</option>
+			<option value="03">3</option><option  value="04">4</option>
+			<option value="05">5</option><option selected value="06">6</option>
+			<option value="07">7</option><option  value="08">8</option>
+			<option value="09">9</option><option  value="10">10</option>
+			<option value="11">11</option><option  value="12">12</option>
+		</select>
+		<select name="checkName">
+			<option  selected value="小香">小香</option><option value="竹竹">竹竹</option><
+			<option value="藝芳">藝芳</option><option value="蓁蓁">蓁蓁</option>
+			<option value="芸賢">芸賢</option><option value="全部">全部</option>
+		</select>
+		<button type="submit">查詢</button>
+	</form>	 
+	<form action="/" method="GET">
+				<button type="submit">返回老闆權限</button>
+	</form> 
+	<table border='1'>
+	<tbody>
+	      <td> 員工姓名 </td>
+	      <td> 打卡日期 </td>  
+	      <td> 打卡時間 </td> 
+	      <td> 打卡狀態 </td> 
+	<%  for(var i=0; i<passvariable.length; i++) {%>
+		<tr>
+		      <td><%= passvariable[i].name %></td>
+		      <td><%= passvariable[i].Year +'/'+ passvariable[i].Month +'/'+ passvariable[i].Day %></td>
+		      <td><%= passvariable[i].Hour +':'+ passvariable[i].Minute %></td>
+		      <td><%= passvariable[i].status %></td>
+		</tr>
+	<% } %>
+	</tbody>
+	</table>
+
+</body>
+</html>

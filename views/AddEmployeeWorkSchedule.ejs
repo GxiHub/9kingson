@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AppEmployeeWorkSchedule</title>
+</head>
+<body>
+
+	<form action="/AddEmployeeWorkSchedule/" method="POST">
+		<select name="checkName">
+			<option  selected value="小香">小香</option>
+			<option value="竹竹">竹竹</option>
+			<option value="藝芳">藝芳</option>
+			<option value="蓁蓁">蓁蓁</option>
+			<option value="芸賢">芸賢</option>
+		</select>
+		<select name="checkPeriodYear">
+			<option value="2016">2016</option><option selected value="2017">2017</option>
+		</select>
+		年
+		<select name="checkPeriodMonth">
+			<option value="01">1</option><option  value="02">2</option>
+			<option value="03">3</option><option  value="04">4</option>
+			<option value="05">5</option><option  value="06">6</option>
+			<option selected value="07">7</option><option  value="08">8</option>
+			<option value="09">9</option><option  value="10">10</option>
+			<option value="11">11</option><option  value="12">12</option>
+		</select>
+		月
+		<select name="checkPeriodDay">
+			<option value="01">1</option><option  value="02">2</option>
+			<option value="03">3</option><option  value="04">4</option>
+			<option value="05">5</option><option  value="06">6</option>
+			<option value="07">7</option><option selected value="08">8</option>
+			<option value="09">9</option><option  value="10">10</option>
+			<option value="11">11</option><option  value="12">12</option>
+			<option value="13">13</option><option  value="14">14</option>
+			<option value="15">15</option><option  value="16">16</option>
+			<option value="17">17</option><option  value="18">18</option>
+			<option value="19">19</option><option  value="20">20</option>
+			<option value="21">21</option><option  value="22">22</option>
+			<option value="23">23</option><option  value="24">24</option>
+			<option value="25">25</option><option  value="26">26</option>
+			<option value="27">27</option><option  value="28">28</option>
+			<option value="29">29</option><option  value="30">30</option>
+			<option value="31">31</option>
+		</select>
+		上班時間
+		<select name="checkPeriodOnlineHour">
+			<option value="1">1</option><option  value="2">2</option>
+			<option value="3">3</option><option  value="4">4</option>
+			<option value="5">5</option><option  value="6">6</option>
+			<option value="7">7</option><option  value="8">8</option>
+			<option value="9">9</option><option  value="10">10</option>
+			<option value="11">11</option><option selected value="12">12</option>
+			<option value="13">13</option><option  value="14">14</option>
+			<option value="15">15</option><option  value="16">16</option>
+			<option value="17">17</option><option  value="18">18</option>
+			<option value="19">19</option><option  value="20">20</option>
+			<option value="21">21</option><option  value="22">22</option>
+			<option value="23">23</option><option  value="24">24</option>
+		</select>
+		<select name="checkPeriodOnlineMinute">
+			<option value="00">00</option><option  value="15">15</option>
+			<option value="30">30</option><option  value="45">45</option>
+		</select>
+		下班時間
+		<select name="checkPeriodOfflineHour">
+			<option value="1">1</option><option  value="2">2</option>
+			<option value="3">3</option><option  value="4">4</option>
+			<option value="5">5</option><option  value="6">6</option>
+			<option value="7">7</option><option  value="8">8</option>
+			<option value="9">9</option><option  value="10">10</option>
+			<option value="11">11</option><option  value="12">12</option>
+			<option value="13">13</option><option  value="14">14</option>
+			<option value="15">15</option><option  value="16">16</option>
+			<option value="17">17</option><option  value="18">18</option>
+			<option value="19">19</option><option selected value="20">20</option>
+			<option value="21">21</option><option  value="22">22</option>
+			<option value="23">23</option><option  value="24">24</option>
+		</select>
+		<select name="checkPeriodOffineMinute">
+			<option value="00">00</option><option  value="15">15</option>
+			<option value="30">30</option><option  value="45">45</option>
+		</select>
+		<button type="submit">加入班表</button>
+	</form>	 
+	<br>
+	<form action="/" method="GET">
+				<button type="submit">返回老闆權限</button>
+	</form> 
+</body>
+</html>
