@@ -55,7 +55,9 @@ exports.EmployeeWorkTimeAndStatus = function(OnlyID,UserName,WorkStatus)
   var Work_Month = moment().format('MM');
   var Work_Day = moment().format('DD');
   var Work_Hour = moment().format('HH');
+  console.log( 'Work_Hour = ',Work_Hour);
   var Work_Minute = moment().format('mm');
+  console.log( 'Work_Hour = ',Work_Hour);
   var SalaryStatus = false;
   dbwork.collection('workperiod').save({TID:Date.now(),uniID:OnlyID,name:UserName,status:WorkStatus,Year:Work_Year,Month:Work_Month,Day:Work_Day,Hour:Work_Hour,Minute:Work_Minute,SalaryCountStatus:SalaryStatus,addworkstatus:'0',extrainfo1:'0',extrainfo2:'0'},function(err,result){
      if(err)return console.log(err);
