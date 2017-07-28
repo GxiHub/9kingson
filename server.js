@@ -310,7 +310,8 @@ app.post('/CheckEmployeeWorkSchedule/',function(req,res){
       year = moment().format('YYYY');
       month = moment().format('MM');
   }
-
+// console.log(' year = ',year);
+// console.log(' month = ',month);
   if(month == '01' || month == '03' || month == '05' || month == '07' || month == '08' || month == '10' || month == '12'){ arraylength = 31; }
   else if(month == '02'){ arraylength = 28; }
   else { arraylength = 31; }
@@ -328,6 +329,7 @@ app.post('/CheckEmployeeWorkSchedule/',function(req,res){
               arr[indexleft].push(indexright);
               count++;
            }     
+           // console.log(' arr = ',arr);
            results = arr;
     res.render('CheckWorkSchedule.ejs',{WorkSchedule:results,MonthPass:month});
   });

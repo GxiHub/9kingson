@@ -34,14 +34,10 @@
 	      <td> 員工姓名 </td>
 	      <td> 上班時刻 </td>  
 	<%  for(var i=0; i<WorkSchedule.length; i++) {%>
-		<% 
-			if(WorkSchedule[i]!=null){
-			if(i<10){i='0'+i;}
-		%>
+		<% var index = i+1%>
 		<tr>
-		      <td><%= MonthPass %>/<%= i %></td><td><%= WorkSchedule[i] %></td>
+		      <td><%= MonthPass %>/<%= index %></td><td><%= WorkSchedule[i] %></td>
 		</tr>
-		<% } %>
 	<% } %>
 	</tbody>
 	</table>
