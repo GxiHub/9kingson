@@ -291,9 +291,15 @@ app.get('/DirectPageToAddEmployeeWorkSchedule/',function(req,res){
     res.render('AddEmployeeWorkSchedule.ejs');
 });
 
-app.get('/Setting/',function(req,res){
+app.get('/AdjustOnlineStatus/',function(req,res){
   dbwork.collection('workperiod').find().toArray(function(err, results) {
-      res.render('SettingPage.ejs',{WorkHour:results});
+      res.render('AdjustOnlineStatus.ejs',{WorkHour:results});
+  });
+});
+
+app.get('/AdjustWorkSchedule/',function(req,res){
+  dbwork.collection('employeeworkschedule').find().toArray(function(err, results) {
+      res.render('AdjustWorkSchedule.ejs',{WorkHour:results});
   });
 });
 
@@ -325,7 +331,7 @@ app.post('/CheckEmployeeWorkSchedule/',function(req,res){
            while(results[count]!=null)
            {  
               var indexleft = parseInt(results[count].workday,10)-1;
-              var indexright = results[count].name;
+              var indexright = results[count].name+' '+results[count].onlinehour+':'+results[count].onlineminute+'-'+results[count].offlinehour+':'+results[count].offlineminute;
               arr[indexleft].push(indexright);
               count++;
            }     
@@ -368,23 +374,20 @@ app.post('/CheckEveryMonthWorkStatus/',function(req,res){
     }
 });
 
-
-
 app.post('/update/', (req, res) => {
   SettingPage.UpdateUserData(req.body.TID,req.body.updathour,req.body.updateminute,req.body.updateday,req.body.updatemonth);
   sleep(1.5);
-  res.redirect('/Setting/');
+  res.redirect('/AdjustOnlineStatus/');
 });
 
 app.post('/delete/', (req, res) => {
-  SettingPage.DeleteUserData(req.body.TID,req.body.DeleteType);
-  sleep(1);
-  if(req.body.DeleteType == 'Setting')
-  {
-    res.redirect('/Setting/');    
-  }
-  else 
-  {
-    res.redirect('/');
-  }
+  SettingPage.DeleteUserData(req.body.TID);
+  sleep(2);
+  res.redirect('/AdjustOnlineStatus/');    
+});
+
+app.post('/DeleteWorkScheduleData/', (req, res) => {
+  SettingPage.DeleteWorkSchdeule(req.body.TID);
+  sleep(2);
+  res.redirect('/AdjustWorkSchedule/');    
 });

@@ -220,23 +220,20 @@ exports.EmployeeSalaryCount = function()
   });
 }
 
-exports.DeleteUserData = function(_UniqueID,_DeleteType)
+exports.DeleteUserData = function(_UniqueID)
 {
-  if(_DeleteType == 'Setting')
-  {
     dbwork.collection('workperiod').findOneAndDelete({TID:parseInt(_UniqueID,10)},
     (err, result) => {
       if (err) return res.send(500, err);
-    })
-  }
-  else if(_DeleteType == 'Salary')
-  {
-    dbwork.collection('CountSalary').findOneAndDelete({TID:parseInt(_UniqueID,10)},
-      (err, result) => {
-        if (err) return res.send(500, err);
-      })
-  }
+    });
+}
 
+exports.DeleteWorkSchdeule = function(_UniqueID)
+{
+    dbwork.collection('employeeworkschedule').findOneAndDelete({TID:parseInt(_UniqueID,10)},
+    (err, result) => {
+      if (err) return res.send(500, err);
+    });
 }
 
 exports.UpdateUserData = function(_UniqueID,_UpdateHour,_UpdateMinute,_UpdateDay,_UpdateMonth)

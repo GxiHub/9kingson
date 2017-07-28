@@ -35,9 +35,11 @@
 	      <td> 上班時刻 </td>  
 	<%  for(var i=0; i<WorkSchedule.length; i++) {%>
 		<% var index = i+1%>
+		<%	if(WorkSchedule[i]!=''){%>
 		<tr>
 		      <td><%= MonthPass %>/<%= index %></td><td><%= WorkSchedule[i] %></td>
 		</tr>
+		<% } %>
 	<% } %>
 	</tbody>
 	</table>

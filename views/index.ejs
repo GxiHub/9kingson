@@ -6,23 +6,23 @@
 </head>
 <body>
 	<form action="/DirectPageToAddEmployeeWorkSchedule/" method="GET">
-				<button type="submit">新增員工上班</button>
+				<button type="submit">新增員工排班</button>
 	</form>
 	<form action="/CheckEmployeeWorkSchedule/" method="POST">
-				<button type="submit">確認單月員工上班</button>
+				<button type="submit">以群組方式查詢單月員工上班情況</button>
 	</form>
 	<form action="/CheckEveryDayWorkStatus/" method="POST">
-				<button type="submit">查詢員工每日上班狀況</button>
+				<button type="submit">根據日期查詢員工上班狀況</button>
 	</form>
 	<form action="/CheckEveryMonthWorkStatus/" method="POST">
-				<button type="submit">查詢員工每月上班狀況</button>
+				<button type="submit">根據月份查詢員工上班狀況</button>
 	</form>
-<!-- 	<form action="/Setting/" method="GET">
-				<button type="submit">調整員工時間</button>
-	</form> -->
-<!-- 	<form action="/CheckSalaryPeriod/" method="POST">
-				<button type="submit">查詢員工單月薪水</button>
-	</form> -->
+	<form action="/AdjustOnlineStatus/" method="GET">
+				<button type="submit">調整員工上班時間</button>
+	</form>
+	<form action="/AdjustWorkSchedule/" method="GET">
+				<button type="submit">調整員工排班狀況</button>
+	</form>
 <!-- 	<form action="/SalaryCount/" method="GET">
 				<button type="submit">計算薪資</button>
 	</form> -->
