@@ -339,6 +339,9 @@ app.post('/CheckEveryDayWorkStatus/',function(req,res){
     var month = req.body.checkPeriodMonth;
     var year = req.body.checkPeriodYear;
     var day = req.body.checkPeriodDay;
+    console.log(' year = ',year);
+    console.log(' month = ',month);
+    console.log(' day = ',day);
     dbwork.collection('workperiod').find({'Year':year,'Month':month,'Day':day}).toArray(function(err, results) {
           res.render('CheckEveryDayWorkStatus.ejs',{passvariable:results});
     });
@@ -348,10 +351,13 @@ app.post('/CheckEveryMonthWorkStatus/',function(req,res){
     var month = req.body.checkPeriodMonth;
     var year = req.body.checkPeriodYear;
     var b=year+'/'+month;
+    console.log(' year = ',year);
+    console.log(' month = ',month);
+    console.log(' req.body.checkName  = ',req.body.checkName );
     if(req.body.checkName == '全部')
     {
       dbwork.collection('workperiod').find({'Year':year,'Month':month}).toArray(function(err, results) {
-          res.render('CheckEveryDayWorkStatus.ejs',{passvariable:results});
+          res.render('CheckEveryMonthWorkStatus.ejs',{passvariable:results});
       });
     }
     else
