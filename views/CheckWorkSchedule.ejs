@@ -6,7 +6,7 @@
 </head>
 <body>
 
-	<form action="/AddEmployeeWorkSchedule/" method="POST">
+	<form action="/CheckEmployeeWorkSchedule/" method="POST">
 
 		<select name="checkPeriodYear">
 			<option value="2016">2016</option><option selected value="2017">2017</option>
@@ -22,7 +22,7 @@
 		</select>
 		月
 
-		<button type="submit">加入班表</button>
+		<button type="submit">查詢班表</button>
 	</form>	 
 	<br>
 	<form action="/" method="GET">
@@ -34,11 +34,14 @@
 	      <td> 員工姓名 </td>
 	      <td> 上班時刻 </td>  
 	<%  for(var i=0; i<WorkSchedule.length; i++) {%>
+		<% 
+			if(WorkSchedule[i]!=null){
+			if(i<10){i='0'+i;}
+		%>
 		<tr>
-		      <td><%= WorkSchedule[i].name %></td>
-		      <td><%= WorkSchedule[i].workyear +'/'+ WorkSchedule[i].workmonth +'/'+ WorkSchedule[i].workday %>
-		          <%= WorkSchedule[i].onlinehour +':'+ WorkSchedule[i].onlineminute+'-'+WorkSchedule[i].offlinehour +':'+ WorkSchedule[i].offlineminute%></td>
+		      <td><%= MonthPass %>/<%= i %></td><td><%= WorkSchedule[i] %></td>
 		</tr>
+		<% } %>
 	<% } %>
 	</tbody>
 	</table>

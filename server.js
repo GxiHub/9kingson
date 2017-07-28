@@ -302,18 +302,19 @@ app.get('/SalaryCount/',function(req,res){
 });
 
 app.post('/CheckEmployeeWorkSchedule/',function(req,res){
-    var month = req.body.checkPeriodMonth;
-    var year = req.body.checkPeriodYear;
-    var arraylength = 0;
-    if(month == null){  
+  var month = req.body.checkPeriodMonth;
+  var year = req.body.checkPeriodYear;
+  var arraylength = 0;
+
+  if(month == null){  
       year = moment().format('YYYY');
       month = moment().format('MM');
-    }
-    
+  }
+
   if(month == '01' || month == '03' || month == '05' || month == '07' || month == '08' || month == '10' || month == '12'){ arraylength = 31; }
   else if(month == '02'){ arraylength = 28; }
   else { arraylength = 31; }
-   console.log(' arraylength = ',arraylength);
+ 
   dbwork.collection('employeeworkschedule').find({'workyear':year,'workmonth':month}).toArray(function(err, results) {
            var count = 0;var arr =[];
            for( var i = 0; i<arraylength; i++ ) {
@@ -323,14 +324,12 @@ app.post('/CheckEmployeeWorkSchedule/',function(req,res){
            while(results[count]!=null)
            {  
               var indexleft = parseInt(results[count].workday,10)-1;
-              // console.log(' indexleft = ',indexleft);
               var indexright = results[count].name;
-              // console.log(' indexright = ',indexright);
               arr[indexleft].push(indexright);
               count++;
            }     
-            console.log(' arr = ',arr); 
-    res.render('CheckWorkSchedule.ejs',{WorkSchedule:results});
+           results = arr;
+    res.render('CheckWorkSchedule.ejs',{WorkSchedule:results,MonthPass:month});
   });
 });
 
