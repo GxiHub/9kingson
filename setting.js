@@ -38,12 +38,13 @@ exports.AddEmployeeWorkSchedule = function(UniID,Brand,Place,UserName,checkPerio
 }
 
 // 新增單店公告
-exports.AddManageNews = function(News,Brand,Place)
+exports.AddManageNews = function(News,Name,Brand,Place)
 {
-  console.log( 'News = ',News);
-  console.log( 'Brand = ',Brand);
-  console.log( 'Place = ',Place);
-  dbwork.collection('managenews').save({TID:Date.now(),news:News,userbrandname:Brand,userbrandplace:Place},function(err,result){
+  var Work_Year = moment().format('YYYY');
+  var Work_Month = moment().format('MM');
+  var Work_Day = moment().format('DD');
+  var Time = Work_Year+'/'+Work_Month+'/'+Work_Day;
+  dbwork.collection('managenews').save({TID:Date.now(),news:News,name:Name,publishtime:Time,userbrandname:Brand,userbrandplace:Place},function(err,result){
      if(err)return console.log(err);
   });
 }
@@ -119,8 +120,8 @@ exports.GetUniIDAndUseItAsQueryParameter = function(UniID)
       console.log( 'GetUniIDAndUseItAsQueryParameter->UniID = ',UniID);
       return new Promise(function(resolve,reject)
       {
-          var collection = dbtoken.collection('memberinformationcollection');
-          collection.findOne({ uniID:parseInt(UniID,10)}, function(err, data ) 
+          var collection = dbtoken.collection('memberbrandinformation');
+          collection.findOne({ uniID:UniID}, function(err, data ) 
           {
               if (err) { 
                   reject(err);

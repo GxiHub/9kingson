@@ -72,7 +72,7 @@ app.get('/FisrtLoginAndReturnMemberToken/',function(req,res){
   });
 });
 
-//透過帳號與密碼比對資料庫，若正確則返回一組 token
+//透過UID比對資料庫，若正確則返回一組 token
 app.get('/GetMemberBrandInformation/',function(req,res){
   dbtoken.collection('memberbrandinformation').find({'uniID':req.headers['uniid']},{_id:0,uniID:0,name:0}).toArray(function(err, results) {
     if(results==null){ json = { 'status':{'code':'E0003','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
@@ -84,7 +84,7 @@ app.get('/GetMemberBrandInformation/',function(req,res){
 // 傳遞 uniID 當作索引來查詢員工姓名，再查詢出員工上班狀況
 app.get('/QueryPersonalSalaryList/',function(req,res){
     var month = req.headers['month'];
-    if(month[0]==0){month=month[1];}
+    //if(month[0]==0){month=month[1];}
     var year = req.headers['year'];
     var b=year+'/'+month;
     console.log(' req.headers[uniid] = ',req.headers['uniid']);
@@ -93,8 +93,18 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
             if(items != null)
             {
                     console.log(' items.name = ',items.name);
-                    dbwork.collection('CountSalary').find({'name':items.name,'onlineTiming':new RegExp(b)},{_id:0,TID:0,uniID:0,name:0,WorkPeriod:0,DailySalary:0}).toArray(function(err, results) {                
-                      json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};
+                    dbwork.collection('workperiod').find({'name':items.name,'Year':year,'Month':month},{_id:0,TID:0,uniID:0,SalaryCountStatus:0,addworkstatus:0,extrainfo1:0,extrainfo2:0}).toArray(function(err, results) {                
+                      var count = 0;while(results[count]!=null){ count++;}console.log(' count = ',count);
+                      var jsonArray = [];
+                      //console.log(' results = ',results[0].name);
+                      for(var i = 0;i<count;i++)
+                      {
+                          var onlineTime = results[i].Year+'/'+results[i].Month+'/'+results[i].Day+' '+results[i].Hour+':'+results[i].Minute;
+                          // console.log(' onlineTime = ',onlineTime);
+                          // console.log(' results.name = ',results[i].status);
+                          jsonArray.push({'WorkTime':onlineTime,'status':results[i].status});
+                      }
+                      json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':jsonArray};
                       var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
                     });           
             }
@@ -112,7 +122,7 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
 // 查詢員工單月薪水資訊
 app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
   var month = req.headers['month'];
-  if(month[0]==0){month=month[1];}
+  // if(month[0]==0){month=month[1];}
   var year = req.headers['year'];
   var b=year+'/'+month;
   dbwork.collection('monthlysalaryinformation').find({'uniID':req.headers['uniid'],'monthperiod':new RegExp(b)},{_id:0,TID:0,uniID:0}).toArray(function(err, results) {
@@ -126,20 +136,19 @@ app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
 app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
   var arraylength = 0;
   var month = req.headers['month'];
-  if(month[0]==0){month=month[1];}
   var year = req.headers['year'];
-  if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){ arraylength = 31; }
-  else if(month == 2){ arraylength = 28; }
+
+  if(month == 01 || month == 03 || month == 05 || month == 07 || month == 08 || month == 10 || month == 12){ arraylength = 31; }
+  else if(month == 02){ arraylength = 28; }
   else { arraylength = 30; }
 
     SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
     {
         dbwork.collection('employeeworkschedule').find({'userbrandname':items.userbrandname,'userbrandplace':items.userbrandplace,'workyear':year,'workmonth':month},{_id:0,TID:0,uniID:0,userbrandname:0,userbrandplace:0,onlinehour:0,onlineminute:0,offlinehour:0,offlineminute:0}).toArray(function(err, results) {
-           var count = 0;var arr =[];
+           var count = 0;var arr =[];var jsonArray = [];
            for( var i = 0; i<arraylength; i++ ) {
               var day = i + 1;
               arr.push([]);
-              arr[i].push(month+'/'+day);
            }
            while(results[count]!=null)
            {  
@@ -147,9 +156,14 @@ app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
               var indexright = results[count].name;
               arr[indexleft].push(results[count].name);
               count++;
-           }     
-           results = arr;
-           console.log(' arr = ',arr); 
+           }   
+           for( var i = 0; i<arraylength; i++ ) {
+               var day = i + 1; 
+               var date = month+'/'+day;
+               jsonArray.push({'Date':date,'Employee':arr[i]});
+           }  
+           results = jsonArray;
+
            if(results==null){ json = { 'status':{'code':'E0006','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
            else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
@@ -179,16 +193,27 @@ app.get('/GetManageNews/',function(req,res){
 // 查詢單日員工上班細項
 app.get('/GetSingleDayWorkScheduleDetail/',function(req,res){
   var month = req.headers['month'];
-  if(month[0]==0){month=month[1];}
+  //if(month[0]==0){month=month[1];}
   var year = req.headers['year'];
   var day = req.headers['day'];
-  if(day[0]==0){day=day[1];}
+  //if(day[0]==0){day=day[1];}
 
     SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
     {
         dbwork.collection('employeeworkschedule').find({'userbrandname':items.userbrandname,'userbrandplace':items.userbrandplace,'workyear':year,'workmonth':month,'workday':day},{_id:0,TID:0,uniID:0,userbrandname:0,userbrandplace:0}).toArray(function(err, results) {
-           if(results==null){ json = { 'status':{'code':'E0008','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
-           else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
+           var count = 0;while(results[count]!=null){ count++;}console.log(' count = ',count);
+           var jsonArray = [];
+
+           for(var i = 0;i<count;i++)
+           {
+              var onlineTime = results[i].workyear+'/'+results[i].workmonth+'/'+results[i].workday+' '+results[i].onlinehour+':'+results[i].onlineminute+'-'+results[i].offlinehour+':'+results[i].offlineminute;
+              // console.log(' onlineTime = ',onlineTime);
+              // console.log(' results.name = ',results[i].status);
+              jsonArray.push({'name':results[i].name,'WorkTime':onlineTime,'status':results[i].status});
+           }
+          
+           if(results==null){ json = { 'status':{'code':'E0008','msg':'唯一碼有錯，請重新輸入'},'data':jsonArray}; }
+           else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':jsonArray};}
            var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
         });
     }, function(err) {
@@ -234,23 +259,11 @@ app.get('/AddManageNews/',function(req,res){
     SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
     {
       console.log(' item is ',items.userbrandname, ' and ',items.userbrandplace,  ' and ',news); 
-      SettingPage.AddManageNews(news,items.userbrandname,items.userbrandplace);
+      SettingPage.AddManageNews(news,items.name,items.userbrandname,items.userbrandplace);
     }, function(err) {
           console.error('The promise was rejected', err, err.stack);
     });  
     res.redirect('/');
-});
-
-// 檢查上班情形
-app.get('/CheckSettingInformation/',function(req,res){
-  // console.log('req.query.UserName = ',req.query.UserName);
-  var month = '6';
-  var year = '2017';
-  var b=year+'/'+month;
-  dbwork.collection('CountSalary').find({'onlineTiming':new RegExp(b),'name':'小香'},{_id:0,TID:0,name:0,uniID:0,deviceid:0,DailySalary:0}).toArray(function(err, results) {
-    json = { 'status':{'code':'success'},'data':results};
-    var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
-  });
 });
 
 app.get('/CalculateMonthlySalaryForEachEmployee/',function(req,res){
