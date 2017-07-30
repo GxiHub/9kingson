@@ -138,6 +138,8 @@ app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
   var arraylength = 0;
   var month = req.headers['month'];
   var year = req.headers['year'];
+  console.error('month=',month);
+  console.error('year=',year);
 
   if(month == 01 || month == 03 || month == 05 || month == 07 || month == 08 || month == 10 || month == 12){ arraylength = 31; }
   else if(month == 02){ arraylength = 28; }
@@ -159,8 +161,9 @@ app.get('/GetMonthlyEmployeeWorkSchedule/',function(req,res){
               count++;
            }   
            for( var i = 0; i<arraylength; i++ ) {
-               var day = i + 1; 
-               var date = month+'/'+day;
+               var day = i + 1;var daystring;var date;
+               if(day<10){daystring='0'+day;date = month+'/'+daystring;}
+               else{date = month+'/'+day;}
                jsonArray.push({'Date':date,'Employee':arr[i]});
            }  
            results = jsonArray;
@@ -193,11 +196,10 @@ app.get('/GetManageNews/',function(req,res){
 
 // 查詢單日員工上班細項
 app.get('/GetSingleDayWorkScheduleDetail/',function(req,res){
-  var month = req.headers['month'];
-  //if(month[0]==0){month=month[1];}
   var year = req.headers['year'];
-  var day = req.headers['day'];
-  //if(day[0]==0){day=day[1];}
+  var date = req.headers['date'];
+  month = date[0]+date[1];
+  day = date[3]+date[4];
 
     SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
     {
