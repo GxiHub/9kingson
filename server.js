@@ -49,7 +49,8 @@ app.get('/GetTokenToServer/',function(req,res){
             if(items != null)
             {
                     SettingPage.EmployeeWorkTimeAndStatus(items.uniID,items.name,items.status);
-                    var body = {'status':{'code':'S0000','msg':items.status}};
+                    var msgString = items.name+''+items.status;
+                    var body = {'status':{'code':'S0000','msg':msgString}};
                     console.log(' DeviceID is ',items.deviceid, ' and ',items.name,' is ',items.status);          
             }
             else
