@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AppEmployeeWorkSchedule</title>
+</head>
+<body>
+
+	<form action="/UseCheckBoxByAddEmployeeWorkSchedule/" method="POST">
+		<select name="checkName">
+			<option  selected value="陳柏農">陳柏農</option>
+			<option value="林祐華">林祐華</option>
+			<option value="張雅筑">張雅筑</option>
+			<option value="曾玫富">曾玫富</option>
+			<option value="李俊興">李俊興</option>
+			<option value="柯怡玲">柯怡玲</option>
+			<option value="郭政一">郭政一</option>
+			<option value="謝雅玲">謝雅玲</option>
+			<option value="盧亞暄">盧亞暄</option>
+			<option value="劉婉玲">劉婉玲</option>
+		</select>
+		<select name="checkPeriodYear">
+			<option value="2016">2016</option><option selected value="2017">2017</option>
+		</select>
+		年
+		<select name="checkPeriodMonth">
+			<option value="01">1</option><option  value="02">2</option>
+			<option value="03">3</option><option  value="04">4</option>
+			<option value="05">5</option><option  value="06">6</option>
+			<option selected value="07">7</option><option  value="08">8</option>
+			<option value="09">9</option><option  value="10">10</option>
+			<option value="11">11</option><option  value="12">12</option>
+		</select>
+		月
+		<input type="hidden" name="checkPeriodOnlineHour" value="11">
+		<input type="hidden" name="checkPeriodOnlineMinute" value="00">
+		<input type="hidden" name="checkPeriodOfflineHour" value="22">
+		<input type="hidden" name="checkPeriodOffineMinute" value="00">
+		<br>
+		<% for(var i=1;i<32;i++){ %>
+  			<% if( i < 10 ){ %>
+  				<input type="checkbox" name="checkbox0<%=i%>" check="<%=i%>">0<%=i%>	  	
+  			<% }else{%>
+  				<input type="checkbox" name="checkbox<%=i%>" check="<%=i%>"><%=i%>
+  			<%} %>
+  			<% if( i == 15 || i == 31 ){ %><br><% } %>
+		<%}%>
+		<button type="submit">加入班表</button>
+	</form>	 
+	<br>
+	<form action="/" method="GET">
+				<button type="submit">返回老闆權限</button>
+	</form> 
+</body>
+</html>
