@@ -3,6 +3,13 @@ bodyParser = require('body-parser');
 MongoClient = require('mongodb').MongoClient;
 path = require('path');
 moment = require('moment');
+var https = require('https');
+var  fs = require("fs");
+
+var options = {
+    key: fs.readFileSync('./privatekey.pem'),
+    cert: fs.readFileSync('./certificate.pem')
+};
 
 app = express();
 
@@ -452,4 +459,8 @@ app.post('/DeleteWorkScheduleData/', (req, res) => {
   SettingPage.DeleteWorkSchdeule(req.body.TID);
   sleep(2);
   res.redirect('/AdjustWorkSchedule/');    
+});
+
+https.createServer(options, app).listen(8081, function () {
+    console.log('Https server listening on port ' + 8081);
 });
