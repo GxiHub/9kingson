@@ -8,7 +8,8 @@ var  fs = require("fs");
 
 var options = {
     key: fs.readFileSync('./privatekey.pem'),
-    cert: fs.readFileSync('./certificate.pem')
+    cert: fs.readFileSync('./certificate.pem'),
+    ca: fs.readFileSync('./cacertificat.pem')
 };
 
 app = express();
