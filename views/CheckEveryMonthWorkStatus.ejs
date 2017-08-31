@@ -41,18 +41,42 @@
 	<br> 
 	<table border='1'>
 	<tbody>
+		  <td> 唯一碼 </td>
 	      <td> 員工姓名 </td>
 	      <td> 打卡日期 </td>  
 	      <td> 打卡時間 </td> 
 	      <td> 打卡狀態 </td> 
+	      <td> 上下班檢查 </td> 
+	      <td> 重覆檢查 </td> 
 	<%  for(var i=0; i<passvariable.length; i++) {%>
 		<tr>
+			  <td><%= passvariable[i].TID %></td>
 		      <td><%= passvariable[i].name %></td>
 		      <td><%= passvariable[i].Year +'/'+ passvariable[i].Month +'/'+ passvariable[i].Day %></td>
 		      <td><%= passvariable[i].Hour +':'+ passvariable[i].Minute %></td>
 		      <td><%= passvariable[i].status %></td>
+		      <%  var onofflineCompare = '' ;var duplicateCheck = 0; 
+				  for(var j=0; j<passvariable.length; j++) {
+
+		      			if( passvariable[i].Day == passvariable[j].Day )
+		      			{
+		      				if(passvariable[i].status != passvariable[j].status)
+		      				{
+		      					duplicateCheck = duplicateCheck + 1;
+		      					onofflineCompare = '正常' ;
+		      					
+		      				}
+
+		      			}
+		      	  }
+		      	  console.log('============================= ');
+		      %>
+		      <td><%= onofflineCompare %></td>
+		      <td><%= duplicateCheck %></td>
+
 		</tr>
 	<% } %>
+
 	</tbody>
 	</table>
 

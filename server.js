@@ -418,7 +418,7 @@ app.post('/CheckEveryDayWorkStatus/',function(req,res){
     console.log(' year = ',year);
     console.log(' month = ',month);
     console.log(' day = ',day);
-    dbwork.collection('workperiod').find({'Year':year,'Month':month,'Day':day}).toArray(function(err, results) {
+    dbwork.collection('workperiod').find({'Year':year,'Month':month,'Day':day}).sort({"name": 1}).toArray(function(err, results) {
           res.render('CheckEveryDayWorkStatus.ejs',{passvariable:results});
     });
 });
@@ -432,13 +432,13 @@ app.post('/CheckEveryMonthWorkStatus/',function(req,res){
     console.log(' req.body.checkName  = ',req.body.checkName );
     if(req.body.checkName == '全部')
     {
-      dbwork.collection('workperiod').find({'Year':year,'Month':month}).toArray(function(err, results) {
+      dbwork.collection('workperiod').find({'Year':year,'Month':month}).sort({"Day": 1}).toArray(function(err, results) {
           res.render('CheckEveryMonthWorkStatus.ejs',{passvariable:results});
       });
     }
     else
     {
-      dbwork.collection('workperiod').find({'name':req.body.checkName,'Year':year,'Month':month}).toArray(function(err, results) {
+      dbwork.collection('workperiod').find({'name':req.body.checkName,'Year':year,'Month':month}).sort({"Day": 1}).toArray(function(err, results) {
           res.render('CheckEveryMonthWorkStatus.ejs',{passvariable:results});
       });
     }
