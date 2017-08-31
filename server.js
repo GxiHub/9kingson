@@ -362,13 +362,13 @@ app.get('/MultipleDirectPageToAddEmployeeWorkSchedule/',function(req,res){
 });
 
 app.get('/AdjustOnlineStatus/',function(req,res){
-  dbwork.collection('workperiod').find().toArray(function(err, results) {
+  dbwork.collection('workperiod').find().sort({"name": 1,"Year":1,"Month":1,"Day": 1}).toArray(function(err, results) {
       res.render('AdjustOnlineStatus.ejs',{WorkHour:results});
   });
 });
 
 app.get('/AdjustWorkSchedule/',function(req,res){
-  dbwork.collection('employeeworkschedule').find().toArray(function(err, results) {
+  dbwork.collection('employeeworkschedule').find().sort({"name": 1,"workyear": 1,"workmonth": 1,"workday": 1}).toArray(function(err, results) {
       res.render('AdjustWorkSchedule.ejs',{WorkHour:results});
   });
 });
@@ -432,13 +432,13 @@ app.post('/CheckEveryMonthWorkStatus/',function(req,res){
     console.log(' req.body.checkName  = ',req.body.checkName );
     if(req.body.checkName == '全部')
     {
-      dbwork.collection('workperiod').find({'Year':year,'Month':month}).sort({"Day": 1}).toArray(function(err, results) {
+      dbwork.collection('workperiod').find({'Year':year,'Month':month}).sort({"name": 1,"Day": 1}).toArray(function(err, results) {
           res.render('CheckEveryMonthWorkStatus.ejs',{passvariable:results});
       });
     }
     else
     {
-      dbwork.collection('workperiod').find({'name':req.body.checkName,'Year':year,'Month':month}).sort({"Day": 1}).toArray(function(err, results) {
+      dbwork.collection('workperiod').find({'name':req.body.checkName,'Year':year,'Month':month}).sort({"name": 1,"Day": 1}).toArray(function(err, results) {
           res.render('CheckEveryMonthWorkStatus.ejs',{passvariable:results});
       });
     }
@@ -460,6 +460,13 @@ app.post('/DeleteWorkScheduleData/', (req, res) => {
   SettingPage.DeleteWorkSchdeule(req.body.TID);
   sleep(2);
   res.redirect('/AdjustWorkSchedule/');    
+});
+
+app.get('/updateUserInformationByTID/', (req, res) => {
+  console.log(' updateUserName ');
+  SettingPage.updateUserInformationByTID('1503894451443');
+
+  res.redirect('/AdjustOnlineStatus/');
 });
 
 https.createServer(options, app).listen(8081, function () {

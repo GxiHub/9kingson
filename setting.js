@@ -259,3 +259,18 @@ exports.UpdateUserData = function(_UniqueID,_UpdateHour,_UpdateMinute,_UpdateDay
   });
 }
 
+exports.updateUserInformationByTID = function(_UniqueID)
+{ 
+  dbwork.collection('workperiod').findOneAndUpdate({TID:parseInt(_UniqueID,10)},{
+    $set: 
+    {
+      name: '羅鈺晴',
+    }
+  },{
+      sort: {_id: -1},
+      upsert: false
+  },(err, result) => {
+    if (err) return res.send(err)
+  });
+}
+
