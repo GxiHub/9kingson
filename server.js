@@ -20,6 +20,7 @@ app.use(express.static(path.join(__dirname,'public')));
 app.use(bodyParser.urlencoded({extended:true}));
 
 SettingPage= require('./setting');
+SalaryCalculate= require('./SalaryCalculate');
 var sleep = require('system-sleep');
 
 var db;
@@ -373,10 +374,6 @@ app.get('/AdjustWorkSchedule/',function(req,res){
   });
 });
 
-app.get('/SalaryCount/',function(req,res){
-  SettingPage.EmployeeSalaryCount();
-});
-
 app.post('/CheckEmployeeWorkSchedule/',function(req,res){
   var month = req.body.checkPeriodMonth;
   var year = req.body.checkPeriodYear;
@@ -442,6 +439,22 @@ app.post('/CheckEveryMonthWorkStatus/',function(req,res){
           res.render('CheckEveryMonthWorkStatus.ejs',{passvariable:results});
       });
     }
+});
+
+app.get('/SalaryCount/',function(req,res){
+  SalaryCalculate.OnlineOfflineTimingCompare('9d8aa310298b','2017','08').then(function(items) 
+    {
+            if(items != null)
+            {
+                res.render('PrintSalaryCalculate.ejs',{passvariable:items});
+            }
+            else
+            {
+                console.error('The item is null');
+            }
+        }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    }); 
 });
 
 app.post('/update/', (req, res) => {
