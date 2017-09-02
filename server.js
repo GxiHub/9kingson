@@ -442,19 +442,14 @@ app.post('/CheckEveryMonthWorkStatus/',function(req,res){
 });
 
 app.get('/SalaryCount/',function(req,res){
-  SalaryCalculate.OnlineOfflineTimingCompare('9d8aa310298b','2017','08').then(function(items) 
-    {
-            if(items != null)
-            {
-                res.render('PrintSalaryCalculate.ejs',{passvariable:items});
-            }
-            else
-            {
-                console.error('The item is null');
-            }
-        }, function(err) {
-          console.error('The promise was rejected', err, err.stack);
-    }); 
+  SalaryCalculate.OnlineOfflineTimingCompare('a094443a5e32','2017','08');
+  res.redirect('/');
+});
+
+app.post('/CheckSalaryCount/',function(req,res){
+    dbwork.collection('everydayonlineofflinelist').find().sort({"name":1,"Day": 1}).toArray(function(err, results) {
+          res.render('PrintSalaryCalculate.ejs',{passvariable:results});
+    });
 });
 
 app.post('/update/', (req, res) => {

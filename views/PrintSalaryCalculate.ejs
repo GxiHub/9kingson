@@ -12,20 +12,23 @@
 	<table border='1'>
 	<tbody>
 		  <td> 唯一碼 </td>
+		  <td> 員工碼 </td>
 	      <td> 員工姓名 </td>
-	      <td> 打卡日期 </td>  
-	      <td> 打卡時間 </td> 
-	      <td> 打卡狀態 </td> 
-	      <td> 上下班檢查 </td> 
-	      <td> 重覆檢查 </td> 
+	      <td> 日期 </td>  
+	      <td> 排班時間 </td> 
+	      <td> 上班時間 </td> 
+	      <td> 加班時數 </td> 
+	      <td> 遲到時數 </td> 
 	<%  for(var i=0; i<passvariable.length; i++) {%>
 		<tr>
 			  <td><%= passvariable[i].TID %></td>
 			  <td><%= passvariable[i].uniID %></td>
 		      <td><%= passvariable[i].name %></td>
 		      <td><%= passvariable[i].Year +'/'+ passvariable[i].Month +'/'+ passvariable[i].Day %></td>
-		      <td><%= passvariable[i].Hour +':'+ passvariable[i].Minute %></td>
-		      <td><%= passvariable[i].status %></td>
+		      <td><%= passvariable[i].onlinehour +':'+ passvariable[i].onlineminute+'-'+passvariable[i].offlinehour +':'+ passvariable[i].offlineminute %></td>
+		      <td><%= passvariable[i].realonlinehour +':'+ passvariable[i].realonlineminute+'-'+ passvariable[i].realofflinehour +':'+ passvariable[i].realofflineminute%></td>
+		      <td><%= passvariable[i].addtime %></td>
+		      <td><%= passvariable[i].latetime %></td>
 		</tr>
 	<% } %>
 	</tbody>
