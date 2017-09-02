@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname,'public')));
 app.use(bodyParser.urlencoded({extended:true}));
 
 SettingPage= require('./setting');
-SalaryCalculate= require('./SalaryCalculate');
+SalaryCalculate= require('./salaryCalculate');
 var sleep = require('system-sleep');
 
 var db;
