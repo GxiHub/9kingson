@@ -23,15 +23,6 @@ SettingPage= require('./setting');
 SalaryCalculate= require('./salaryCalculate');
 var sleep = require('system-sleep');
 
-var db;
-MongoClient.connect('mongodb://mushi:mushi@ds137090.mlab.com:37090/mushi_work_hour', function(err, database){ 
-  if (err) return console.log(err);
-  db = database;
-  app.listen(8080, function(){
-    console.log('listening on 8080');
-  })
-})
-
 var dbtoken;
 MongoClient.connect('mongodb://9kingson:mini0306@ds111622.mlab.com:11622/usertokenrelatedinformation', function(err, database){ 
   if (err) return console.log(err);
@@ -374,6 +365,29 @@ app.get('/AdjustWorkSchedule/',function(req,res){
   });
 });
 
+app.get('/AddSalaryCalculateMonthCheck',function(req,res){
+  var AddYear;var AddMonth;
+  for(var add2017 =1;add2017<13;add2017++)
+  {
+      AddYear = '2017';
+      if(add2017<10){ AddMonth ='0'+add2017;}
+      else{AddMonth =add2017;} 
+      dbwork.collection('salarycalculatemonthcheck').save({TID:Date.now(),year:AddYear,month:AddMonth,calculatecheck:'0'},function(err,result){
+          if(err)return console.log(err);
+      });    
+  }
+  for(var add2018 =1;add2018<13;add2018++)
+  {
+      AddYear = '2018';
+      if(add2018<10){ AddMonth ='0'+add2018;}
+      else{AddMonth =add2018;}   
+      dbwork.collection('salarycalculatemonthcheck').save({TID:Date.now(),year:AddYear,month:AddMonth,calculatecheck:'0'},function(err,result){
+          if(err)return console.log(err);
+      });    
+  }
+  res.redirect('/');
+});
+
 app.post('/CheckEmployeeWorkSchedule/',function(req,res){
   var month = req.body.checkPeriodMonth;
   var year = req.body.checkPeriodYear;
@@ -442,14 +456,38 @@ app.post('/CheckEveryMonthWorkStatus/',function(req,res){
 });
 
 app.get('/SalaryCount/',function(req,res){
-  SalaryCalculate.OnlineOfflineTimingCompare('a094443a5e32','2017','08');
+  dbtoken.collection('memberbrandinformation').find().toArray(function(err, results) {
+      console.log(' result = ',results.length);
+      for( var i = 0; i<results.length; i++ ) {
+        //console.log(' result[',i,'] = ',results[i].uniID);
+        SalaryCalculate.OnlineOfflineTimingCompare(results[i].uniID,'2017','08');
+      }
+  });  
   res.redirect('/');
 });
 
 app.post('/CheckSalaryCount/',function(req,res){
-    dbwork.collection('everydayonlineofflinelist').find().sort({"name":1,"Day": 1}).toArray(function(err, results) {
+    dbwork.collection('everydayonlineofflinelist').find({'name':req.body.checkName,'Year':req.body.checkPeriodYear,'Month':req.body.checkPeriodMonth}).sort({"name":1,"Day": 1}).toArray(function(err, results) {
           res.render('PrintSalaryCalculate.ejs',{passvariable:results});
     });
+});
+
+app.post('/CheckMonthSalary/',function(req,res){
+    var YearMonth = req.body.checkPeriodYear+'/'+req.body.checkPeriodMonth;
+    console.log(' YearMonth= ',YearMonth);
+    if(req.body.checkName == '全部')
+    {
+      dbwork.collection('monthlysalaryinformation').find({monthperiod:YearMonth}).toArray(function(err, results) {
+              res.render('MonthSalary.ejs',{passvariable:results});
+        });   
+    }
+    else
+    {
+      dbwork.collection('monthlysalaryinformation').find({'name':req.body.checkName,monthperiod:YearMonth}).sort({"name":1}).toArray(function(err, results) {
+            res.render('MonthSalary.ejs',{passvariable:results});
+      });      
+    }
+
 });
 
 app.post('/update/', (req, res) => {
@@ -479,4 +517,8 @@ app.get('/updateUserInformationByTID/', (req, res) => {
 
 https.createServer(options, app).listen(8081, function () {
     console.log('Https server listening on port ' + 8081);
+});
+
+app.listen(8080, function(){
+    console.log('listening on 8080');
 });

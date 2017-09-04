@@ -1,11 +1,5 @@
 MongoClient = require('mongodb').MongoClient;
 
-var db;
-MongoClient.connect('mongodb://mushi:mushi@ds137090.mlab.com:37090/mushi_work_hour', function(err, database){ 
-  if (err) return console.log(err);
-  db = database;
-})
-
 var dbtoken;
 MongoClient.connect('mongodb://9kingson:mini0306@ds111622.mlab.com:11622/usertokenrelatedinformation', function(err, database){ 
   if (err) return console.log(err);
@@ -164,61 +158,6 @@ exports.PromiseGetBrandInfo = function(Name)
               }
           });
       }); 
-}
-
-// 計算員工薪水
-exports.EmployeeSalaryCount = function()
-{
-  var daily_salary,workPeriod,onlineTime,offlineTime;
-  // db.collection('WorkHour').find().toArray(function(err, results) {
-  dbwork.collection('workperiod').find().toArray(function(err, results) {
-      // console.log('results=',results);
-      for(var i=0; i<results.length; i++)
-      {  
-        hour_checkout = 0;
-        minute_checkout = 0;
-        daily_salary = 0;
-        workPeriod = 0;
-        for(var j=i+1; j<results.length; j++)
-        {  
-          if( (results[j].name == results[i].name) && (results[j].Year == results[i].Year) && (results[j].SalaryCountStatus == false)&& (results[j].SalaryCountStatus == false) &&
-              (results[j].Month == results[i].Month)&& (results[j].Day == results[i].Day) && (results[j].status == '下班') && (results[i].status == '上班') )
-            {
-              onlineTime = results[i].Year+'/'+results[i].Month+'/'+results[i].Day+" "+results[i].Hour+':'+results[i].Minute;
-              offlineTime = results[j].Year+'/'+results[j].Month+'/'+results[j].Day+" "+results[j].Hour+':'+results[j].Minute;
-              workPeriod = (parseInt(results[j].Hour,10)*60+parseInt(results[j].Minute,10))-(parseInt(results[i].Hour,10)*60+parseInt(results[i].Minute,10));
-              dailySalary = Math.round(workPeriod*133/60, 10);
-              dbwork.collection('CountSalary').save({TID:Date.now(),uniID:results[i].uniID,name:results[i].name,onlineTiming:onlineTime,offLineTiming:offlineTime,WorkPeriod:workPeriod,DailySalary:dailySalary},function(err,result){
-              //db.collection('CountSalary').save({uniID:Date.now(),name:results[i].name,UserBrandTitle:results[i].UserBrandTitle,UserBrandName:results[i].UserBrandName,UserBrandPlace:results[i].UserBrandPlace,onlineTiming:onlineTime,offLineTiming:offlineTime,WorkPeriod:workPeriod,DailySalary:dailySalary},function(err,result){
-                if(err)return console.log(err);
-              });
-              dbwork.collection('workperiod').findOneAndUpdate({TID:parseInt(results[i].TID,10)},{
-              //db.collection('WorkHour').findOneAndUpdate({uniID:parseInt(results[i].uniID,10)},{ 
-                $set: 
-                {
-                  SalaryCountStatus: true,
-                }
-              },{
-                  upsert: false
-              },(err, result) => {
-                if (err) return res.send(err)
-              });
-              //db.collection('WorkHour').findOneAndUpdate({uniID:parseInt(results[j].uniID,10)},{
-              dbwork.collection('workperiod').findOneAndUpdate({TID:parseInt(results[j].TID,10)},{
-                $set: 
-                {
-                  SalaryCountStatus: true,
-                }
-              },{
-                  upsert: false
-              },(err, result) => {
-                if (err) return res.send(err)
-              });            
-            }          
-        }
-    
-      }
-  });
 }
 
 exports.DeleteUserData = function(_UniqueID)
