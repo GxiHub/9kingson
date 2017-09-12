@@ -75,9 +75,10 @@ app.get('/FisrtLoginAndReturnMemberToken/',function(req,res){
 
 //透過UID比對資料庫，若正確則返回一組 token
 app.get('/GetMemberBrandInformation/',function(req,res){
-  dbtoken.collection('memberbrandinformation').find({'uniID':req.headers['uniid']},{_id:0,uniID:0,name:0}).toArray(function(err, results) {
+  dbtoken.collection('memberbrandinformation').find({'uniID':req.headers['uniid']},{_id:0,userfirstarrival:0,userlawsalary:0,userextrasalary:0,usertitlesalary:0,userwithoutsalary:0,userfoodsalary:0,usermonthsalary:0}).toArray(function(err, results) {
+    var jsonReturn = {};jsonReturn ={'uniID':results[0].uniID,'name':results[0].name,'userbrandtitle':results[0].userbrandtitle,'userbrandname':results[0].userbrandname,'userbrandplace':results[0].userbrandplace};
     if(results==null){ json = { 'status':{'code':'E0003','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
-    else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
+    else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':jsonReturn};}
         var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
 });
