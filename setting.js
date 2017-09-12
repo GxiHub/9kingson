@@ -160,6 +160,7 @@ exports.PromiseGetBrandInfo = function(Name)
       }); 
 }
 
+// D1 function
 exports.DeleteUserData = function(_UniqueID)
 {
     dbwork.collection('workperiod').findOneAndDelete({TID:parseInt(_UniqueID,10)},
@@ -167,15 +168,6 @@ exports.DeleteUserData = function(_UniqueID)
       if (err) return res.send(500, err);
     });
 }
-
-exports.DeleteWorkSchdeule = function(_UniqueID)
-{
-    dbwork.collection('employeeworkschedule').findOneAndDelete({TID:parseInt(_UniqueID,10)},
-    (err, result) => {
-      if (err) return res.send(500, err);
-    });
-}
-
 exports.UpdateUserData = function(_UniqueID,_UpdateHour,_UpdateMinute,_UpdateDay,_UpdateMonth)
 { 
   console.log('_UniqueID=',_UniqueID);
@@ -197,6 +189,16 @@ exports.UpdateUserData = function(_UniqueID,_UpdateHour,_UpdateMinute,_UpdateDay
     if (err) return res.send(err)
   });
 }
+// D2 function
+exports.DeleteWorkSchdeule = function(_UniqueID)
+{
+    dbwork.collection('employeeworkschedule').findOneAndDelete({TID:parseInt(_UniqueID,10)},
+    (err, result) => {
+      if (err) return res.send(500, err);
+    });
+}
+
+
 
 exports.updateUserInformationByTID = function(_UniqueID)
 { 

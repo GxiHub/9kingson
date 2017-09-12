@@ -1,6 +1,9 @@
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/server.js .
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/setting.js .
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/salaryCalculate.js .
+sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/AddInformationFromWebsite.js .
+sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/CheckInformationFromWebsite.js .
+sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/AdjustInformationFromWebsite.js .
 
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/views/AddEmployeeWorkSchedule.ejs ./views/.
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/views/AdjustOnlineStatus.ejs ./views/.

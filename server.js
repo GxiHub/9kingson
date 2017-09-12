@@ -94,7 +94,7 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
             if(items != null)
             {
                     console.log(' items.name = ',items.name);
-                    dbwork.collection('workperiod').find({'name':items.name,'Year':year,'Month':month},{_id:0,TID:0,uniID:0,SalaryCountStatus:0,addworkstatus:0,extrainfo1:0,extrainfo2:0}).toArray(function(err, results) {                
+                    dbwork.collection('workperiod').find({'name':items.name,'Year':year,'Month':month},{_id:0,TID:0,uniID:0,SalaryCountStatus:0,addworkstatus:0,extrainfo1:0,extrainfo2:0}).sort({"Day": 1}).toArray(function(err, results) {                
                       var count = 0;while(results[count]!=null){ count++;}console.log(' count = ',count);
                       var jsonArray = [];
                       //console.log(' results = ',results[0].name);
@@ -243,6 +243,39 @@ app.post('/AddMemberBrandInformation/',function(req,res){
     SettingPage.AddMemberBrandInformation(uniID,namePass,userBrandtitle,userBrandname,userBrandplace,monthsalary,hoursalary);
 });
 
+// 透過postman新增單店公告
+app.get('/AddManageNews/',function(req,res){
+    var news = req.headers['news'];
+    SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
+    {
+      console.log(' item is ',items.userbrandname, ' and ',items.userbrandplace,  ' and ',news); 
+      SettingPage.AddManageNews(news,items.name,items.userbrandname,items.userbrandplace);
+    }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    });  
+    res.redirect('/');
+});
+
+// A1. 增加員工單日排班，透過名字去資料庫撈品牌名稱與唯一碼來新增個人排班
+app.get('/SingleDirectPageToAddEmployeeWorkSchedule/',function(req,res){
+    res.render('AddEmployeeWorkSchedule.ejs');
+});
+app.post('/AddEmployeeWorkSchedule/',function(req,res){
+    console.log(' req.body.checkName = ',req.body.checkName);
+    SettingPage.PromiseGetBrandInfo(req.body.checkName).then(function(items) 
+    {
+      console.log(' DeviceID is ',items.userbrandname, ' and ',items.uniID); 
+      SettingPage.AddEmployeeWorkSchedule(items.uniID,items.userbrandname,items.userbrandplace,req.body.checkName,req.body.checkPeriodYear,req.body.checkPeriodMonth,req.body.checkPeriodDay,req.body.checkPeriodOnlineHour,req.body.checkPeriodOnlineMinute,req.body.checkPeriodOfflineHour,req.body.checkPeriodOffineMinute);
+    }, function(err) {
+          console.error('The promise was rejected', err, err.stack);
+    });  
+    res.redirect('/');
+});
+
+// A2. 增加員工多日排班，透過名字去資料庫撈品牌名稱與唯一碼來新增個人排班
+app.get('/MultipleDirectPageToAddEmployeeWorkSchedule/',function(req,res){
+    res.render('UseCheckBoxByAddEmployeeWorkSchedule.ejs');
+});
 app.post('/UseCheckBoxByAddEmployeeWorkSchedule/',function(req,res){
       SettingPage.PromiseGetBrandInfo(req.body.checkName).then(function(items) 
       {
@@ -285,109 +318,7 @@ app.post('/UseCheckBoxByAddEmployeeWorkSchedule/',function(req,res){
     res.redirect('/');
 });
 
-app.post('/AddEmployeeWorkSchedule/',function(req,res){
-    console.log(' req.body.checkName = ',req.body.checkName);
-    //SettingPage.PromiseGetBrandInfo(req.headers['name']).then(function(items) 
-    SettingPage.PromiseGetBrandInfo(req.body.checkName).then(function(items) 
-    {
-      console.log(' DeviceID is ',items.userbrandname, ' and ',items.uniID); 
-      SettingPage.AddEmployeeWorkSchedule(items.uniID,items.userbrandname,items.userbrandplace,req.body.checkName,req.body.checkPeriodYear,req.body.checkPeriodMonth,req.body.checkPeriodDay,req.body.checkPeriodOnlineHour,req.body.checkPeriodOnlineMinute,req.body.checkPeriodOfflineHour,req.body.checkPeriodOffineMinute);
-    }, function(err) {
-          console.error('The promise was rejected', err, err.stack);
-    });  
-    res.redirect('/');
-});
-
-// 透過postman新增單店公告
-app.get('/AddManageNews/',function(req,res){
-    var news = req.headers['news'];
-    SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
-    {
-      console.log(' item is ',items.userbrandname, ' and ',items.userbrandplace,  ' and ',news); 
-      SettingPage.AddManageNews(news,items.name,items.userbrandname,items.userbrandplace);
-    }, function(err) {
-          console.error('The promise was rejected', err, err.stack);
-    });  
-    res.redirect('/');
-});
-
-app.get('/CalculateMonthlySalaryForEachEmployee/',function(req,res){
-    console.log(' req.headers[uniid] = ',req.headers['uniid']);
-    var month = '6';
-    var year = '2017';
-    var b=year+'/'+month;
-    SettingPage.PromiseGetMonthSalaryOrHourSalary(req.headers['uniid']).then(function(items) 
-    {
-            if(items != null)
-            {
-                    //console.log(' items = ',items);
-                    dbwork.collection('CountSalary').find({'name':items.name,'onlineTiming':new RegExp(b)},{_id:0,TID:0,uniID:0,onlineTiming:0,offLineTiming:0,DailySalary:0,name:0}).toArray(function(err, results) {
-                            var count = 0 ; var totalSalary = 0;var OverWorkTime = 0; var LateWorkTime = 0;var ExtraBonus = 0; var SpecialBonus = 0;
-                            while(results[count]!=null)
-                            {  
-                              totalSalary = totalSalary + parseInt(results[count].WorkPeriod,10);
-                              count++;
-                            }
-                            var CalculateMonth = parseInt(items.userhoursalary,10) * totalSalary / 60;
-                            var FinalSalary = parseInt(CalculateMonth,10) - OverWorkTime - LateWorkTime + ExtraBonus + SpecialBonus;                          
-                            SettingPage.AddEmployeeMonthlySalaryInformation(req.headers['uniid'],b,items.name,items.userbrandtitle,parseInt(CalculateMonth,10),OverWorkTime,LateWorkTime,ExtraBonus,SpecialBonus,FinalSalary);
-                    });           
-            }
-        }, function(err) {
-          console.error('The promise was rejected', err, err.stack);
-    }); 
-    res.send('Calculate Monthly Salary');
-});
-
-app.post('/CheckSalaryPeriod/',function(req,res){
-  dbwork.collection('CountSalary').find().toArray(function(err, results) {
-      res.render('CheckSalaryPage.ejs',{SalaryList:results,PeriodYear:req.body.checkPeriodYear,PeriodMonth:req.body.checkPeriodMonth,CheckName:req.body.checkName});
-  });
-});
-
-app.get('/SingleDirectPageToAddEmployeeWorkSchedule/',function(req,res){
-    res.render('AddEmployeeWorkSchedule.ejs');
-});
-
-app.get('/MultipleDirectPageToAddEmployeeWorkSchedule/',function(req,res){
-    res.render('UseCheckBoxByAddEmployeeWorkSchedule.ejs');
-});
-
-app.get('/AdjustOnlineStatus/',function(req,res){
-  dbwork.collection('workperiod').find().sort({"name": 1,"Year":1,"Month":1,"Day": 1}).toArray(function(err, results) {
-      res.render('AdjustOnlineStatus.ejs',{WorkHour:results});
-  });
-});
-
-app.get('/AdjustWorkSchedule/',function(req,res){
-  dbwork.collection('employeeworkschedule').find().sort({"name": 1,"workyear": 1,"workmonth": 1,"workday": 1}).toArray(function(err, results) {
-      res.render('AdjustWorkSchedule.ejs',{WorkHour:results});
-  });
-});
-
-app.get('/AddSalaryCalculateMonthCheck',function(req,res){
-  var AddYear;var AddMonth;
-  for(var add2017 =1;add2017<13;add2017++)
-  {
-      AddYear = '2017';
-      if(add2017<10){ AddMonth ='0'+add2017;}
-      else{AddMonth =add2017;} 
-      dbwork.collection('salarycalculatemonthcheck').save({TID:Date.now(),year:AddYear,month:AddMonth,calculatecheck:'0'},function(err,result){
-          if(err)return console.log(err);
-      });    
-  }
-  for(var add2018 =1;add2018<13;add2018++)
-  {
-      AddYear = '2018';
-      if(add2018<10){ AddMonth ='0'+add2018;}
-      else{AddMonth =add2018;}   
-      dbwork.collection('salarycalculatemonthcheck').save({TID:Date.now(),year:AddYear,month:AddMonth,calculatecheck:'0'},function(err,result){
-          if(err)return console.log(err);
-      });    
-  }
-  res.redirect('/');
-});
-
+// C1. 透過年月和店名來查詢單月排班狀況
 app.post('/CheckEmployeeWorkSchedule/',function(req,res){
   var month = req.body.checkPeriodMonth;
   var year = req.body.checkPeriodYear;
@@ -422,6 +353,7 @@ app.post('/CheckEmployeeWorkSchedule/',function(req,res){
   });
 });
 
+// C2. 透過年月日和店名來查詢全店單日上班狀況
 app.post('/CheckEveryDayWorkStatus/',function(req,res){
     var month = req.body.checkPeriodMonth;
     var year = req.body.checkPeriodYear;
@@ -434,6 +366,7 @@ app.post('/CheckEveryDayWorkStatus/',function(req,res){
     });
 });
 
+// C3. 透過年月和店名來查詢單月每個人的上班狀況
 app.post('/CheckEveryMonthWorkStatus/',function(req,res){
     var month = req.body.checkPeriodMonth;
     var year = req.body.checkPeriodYear;
@@ -455,23 +388,44 @@ app.post('/CheckEveryMonthWorkStatus/',function(req,res){
     }
 });
 
-app.get('/SalaryCount/',function(req,res){
-  dbtoken.collection('memberbrandinformation').find().toArray(function(err, results) {
-      console.log(' result = ',results.length);
-      for( var i = 0; i<results.length; i++ ) {
-        //console.log(' result[',i,'] = ',results[i].uniID);
-        SalaryCalculate.OnlineOfflineTimingCompare(results[i].uniID,'2017','08');
-      }
-  });  
-  res.redirect('/');
+// D1. 調整員工上班時間或是刪除員工上班時間
+app.get('/AdjustOnlineStatus/',function(req,res){
+  dbwork.collection('workperiod').find().sort({"name": 1,"Year":1,"Month":1,"Day": 1}).toArray(function(err, results) {
+      res.render('AdjustOnlineStatus.ejs',{WorkHour:results});
+  });
+});
+app.post('/update/', (req, res) => {
+  SettingPage.UpdateUserData(req.body.TID,req.body.updathour,req.body.updateminute,req.body.updateday,req.body.updatemonth);
+  sleep(1.5);
+  res.redirect('/AdjustOnlineStatus/');
 });
 
+app.post('/delete/', (req, res) => {
+  SettingPage.DeleteUserData(req.body.TID);
+  sleep(2);
+  res.redirect('/AdjustOnlineStatus/');    
+});
+
+// D2. 調整員工排班時間或刪除員工排班時間
+app.get('/AdjustWorkSchedule/',function(req,res){
+  dbwork.collection('employeeworkschedule').find().sort({"name": 1,"workyear": 1,"workmonth": 1,"workday": 1}).toArray(function(err, results) {
+      res.render('AdjustWorkSchedule.ejs',{WorkHour:results});
+  });
+});
+app.post('/DeleteWorkScheduleData/', (req, res) => {
+  SettingPage.DeleteWorkSchdeule(req.body.TID);
+  sleep(2);
+  res.redirect('/AdjustWorkSchedule/');    
+});
+
+// C4. 透過姓名與年月和店名來查詢加班薪水
 app.post('/CheckSalaryCount/',function(req,res){
     dbwork.collection('everydayonlineofflinelist').find({'name':req.body.checkName,'Year':req.body.checkPeriodYear,'Month':req.body.checkPeriodMonth}).sort({"name":1,"Day": 1}).toArray(function(err, results) {
           res.render('PrintSalaryCalculate.ejs',{passvariable:results});
     });
 });
 
+// C5. 透過姓名與年月和店名來查詢單月總薪水
 app.post('/CheckMonthSalary/',function(req,res){
     var YearMonth = req.body.checkPeriodYear+'/'+req.body.checkPeriodMonth;
     console.log(' YearMonth= ',YearMonth);
@@ -490,22 +444,40 @@ app.post('/CheckMonthSalary/',function(req,res){
 
 });
 
-app.post('/update/', (req, res) => {
-  SettingPage.UpdateUserData(req.body.TID,req.body.updathour,req.body.updateminute,req.body.updateday,req.body.updatemonth);
-  sleep(1.5);
-  res.redirect('/AdjustOnlineStatus/');
+// A3. 依照年月和店名增加薪水計算資料庫 
+app.get('/AddSalaryCalculateMonthCheck',function(req,res){
+  var AddYear;var AddMonth;
+  for(var add2017 =1;add2017<13;add2017++)
+  {
+      AddYear = '2017';
+      if(add2017<10){ AddMonth ='0'+add2017;}
+      else{AddMonth =add2017;} 
+      dbwork.collection('salarycalculatemonthcheck').save({TID:Date.now(),year:AddYear,month:AddMonth,calculatecheck:'0'},function(err,result){
+          if(err)return console.log(err);
+      });    
+  }
+  for(var add2018 =1;add2018<13;add2018++)
+  {
+      AddYear = '2018';
+      if(add2018<10){ AddMonth ='0'+add2018;}
+      else{AddMonth =add2018;}   
+      dbwork.collection('salarycalculatemonthcheck').save({TID:Date.now(),year:AddYear,month:AddMonth,calculatecheck:'0'},function(err,result){
+          if(err)return console.log(err);
+      });    
+  }
+  res.redirect('/');
 });
 
-app.post('/delete/', (req, res) => {
-  SettingPage.DeleteUserData(req.body.TID);
-  sleep(2);
-  res.redirect('/AdjustOnlineStatus/');    
-});
-
-app.post('/DeleteWorkScheduleData/', (req, res) => {
-  SettingPage.DeleteWorkSchdeule(req.body.TID);
-  sleep(2);
-  res.redirect('/AdjustWorkSchedule/');    
+// A4. 依照店名與年月計算當月薪資 
+app.get('/SalaryCount/',function(req,res){
+  dbtoken.collection('memberbrandinformation').find().toArray(function(err, results) {
+      console.log(' result = ',results.length);
+      for( var i = 0; i<results.length; i++ ) {
+        //console.log(' result[',i,'] = ',results[i].uniID);
+        SalaryCalculate.OnlineOfflineTimingCompare(results[i].uniID,'2017','08');
+      }
+  });  
+  res.redirect('/');
 });
 
 app.get('/updateUserInformationByTID/', (req, res) => {
