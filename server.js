@@ -124,12 +124,12 @@ app.get('/QueryPersonalSalaryList/',function(req,res){
 // 查詢員工單月薪水資訊
 app.get('/GetMonthlySalaryForEachEmployee/',function(req,res){
   var month = req.headers['month'];
-  // if(month[0]==0){month=month[1];}
   var year = req.headers['year'];
   var b=year+'/'+month;
   dbwork.collection('monthlysalaryinformation').find({'uniID':req.headers['uniid'],'monthperiod':new RegExp(b)},{_id:0,TID:0,uniID:0}).toArray(function(err, results) {
+    var jsonReturn = {};jsonReturn ={'monthperiod':results[0].monthperiod,'monthsalary':results[0].monthsalary,'withoutsalary':results[0].withoutsalary,'foodsalary':results[0].foodsalary,'titlesalary':results[0].titlesalary,'addtimesalary':results[0].addtimesalary,'latetimesalary':results[0].latetimesalary,'extrabonus':results[0].extrabonus,'lawsalary':results[0].lawsalary,'totalmonthsalaty':results[0].totalmonthsalaty};
     if(results==null){ json = { 'status':{'code':'E0005','msg':'唯一碼有錯，請重新輸入'},'data':results}; }
-    else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':results};}
+    else{ json = { 'status':{'code':'S0000','msg':'唯一碼正確'},'data':jsonReturn};}
         var SendDataToPhone = JSON.stringify(json); res.type('application/json'); res.send(SendDataToPhone);
   });
 });
