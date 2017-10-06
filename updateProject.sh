@@ -1,5 +1,6 @@
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/server.js .
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/setting.js .
+sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/CheckEveryThing.js .
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/salaryCalculate.js .
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/AddInformationFromWebsite.js .
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/CheckInformationFromWebsite.js .
