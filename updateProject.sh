@@ -16,3 +16,4 @@ sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/views/index.ejs
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/views/MonthSalary.ejs ./views/.
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/views/PrintSalaryCalculate.ejs ./views/.
 sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/views/UseCheckBoxByAddEmployeeWorkSchedule.ejs ./views/.
+sudo cp ./../../../../Library/WebServer/Documents/Project/NodeGo/views/CheckEmployeeBasicInformation.ejs ./views/.

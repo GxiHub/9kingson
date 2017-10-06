@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CheckEveryMonthWorkStatus</title>
+</head>
+<body>
+	<form action="/" method="GET">
+				<button type="submit">返回老闆權限</button>
+	</form>
+	<br> 
+	<table border='1'>
+	<tbody>
+		  <td> 唯一碼 </td>
+	      <td> 員工姓名 </td>
+	      <td> 員工職稱 </td>  
+	      <td> 員工品牌 </td> 
+	      <td> 員工地點 </td> 
+	      <td> 基本月薪 </td> 
+	      <td> 伙食津貼 </td> 
+	      <td> 全勤津貼 </td> 
+	      <td> 職務津貼 </td> 
+	      <td> 額外津貼 </td> 
+	      <td> 勞健保費 </td>
+	      <td> 未滿一月 </td>  	      	      	      	   
+	<%  for(var i=0; i<passvariable.length; i++) {%>
+		<tr>
+			  <td><%= passvariable[i].uniID %></td>
+		      <td><%= passvariable[i].name %></td>
+		      <td><%= passvariable[i].userbrandtitle%></td>
+		      <td><%= passvariable[i].userbrandname%></td>
+		      <td><%= passvariable[i].userbrandplace %></td>
+		      <td><%= passvariable[i].usermonthsalary %></td>
+		      <td><%= passvariable[i].userfoodsalary %></td>
+		      <td><%= passvariable[i].userwithoutsalary %></td>
+		      <td><%= passvariable[i].usertitlesalary %></td>
+		      <td><%= passvariable[i].userextrasalary %></td>
+		      <td><%= passvariable[i].userlawsalary %></td>	
+		      <td><%= passvariable[i].userfirstarrival %></td>			     	      
+		</tr>
+	<% } %>
+	</tbody>
+	</table>
+
+</body>
+</html>

@@ -433,6 +433,12 @@ app.post('/CheckSalaryCount/',function(req,res){
     });
 });
 
+app.get('/CheckEmployeeBasicInformation/',function(req,res){
+    dbtoken.collection('memberbrandinformation').find().toArray(function(err, results) {
+          res.render('CheckEmployeeBasicInformation.ejs',{passvariable:results});
+    });
+});
+
 // C5. 透過姓名與年月和店名來查詢單月總薪水
 app.post('/CheckMonthSalary/',function(req,res){
     var YearMonth = req.body.checkPeriodYear+'/'+req.body.checkPeriodMonth;
