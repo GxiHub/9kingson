@@ -101,9 +101,9 @@ exports.AddMemberInformationFunction = function(UserName,Account,PassWord)
 }
 
 // 用來新增每個人的店務名稱、品牌、地點
-exports.AddMemberBrandInformation = function(UniID,UserName,UserBrandtitle,UserBrandname,UserBrandplace,MonthSalary,HourSalary)
+exports.AddMemberBrandInformation = function(UniID,UserName,UserBrandtitle,UserBrandname,UserBrandplace,UserMonthSalary,UserFoodSalary,UserWithoutSalary,UserTitleSalary,UserExtraSalary,UserLawSalary,UserFirstArrival)
 {
-  dbtoken.collection('memberbrandinformation').save({uniID:UniID,name:UserName,userbrandtitle:UserBrandtitle,userbrandname:UserBrandname,userbrandplace:UserBrandplace,usermonthsalary:MonthSalary,userhoursalary:HourSalary},function(err,result){
+  dbtoken.collection('memberbrandinformation').save({uniID:UniID,name:UserName,userbrandtitle:UserBrandtitle,userbrandname:UserBrandname,userbrandplace:UserBrandplace,usermonthsalary:UserMonthSalary,userFoodsalary:UserFoodSalary,userwithoutsalary:UserWithoutSalary,usertitlesalary:UserTitleSalary,userextrasalary:UserExtraSalary,userlawsalary:UserLawSalary,userfirstarrival:UserFirstArrival},function(err,result){
     if(err)return console.log(err);
   });
 }

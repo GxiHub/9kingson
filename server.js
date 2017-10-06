@@ -20,6 +20,7 @@ app.use(express.static(path.join(__dirname,'public')));
 app.use(bodyParser.urlencoded({extended:true}));
 
 SettingPage= require('./setting');
+CheckEveryThing = require('./CheckEveryThing');
 SalaryCalculate= require('./salaryCalculate');
 var sleep = require('system-sleep');
 
@@ -240,8 +241,14 @@ app.post('/AddMemberInformationFunction/',function(req,res){
 
 // 透過postman新增會員品牌店務資料
 app.post('/AddMemberBrandInformation/',function(req,res){
-    var uniID = req.query.uniID;var namePass = req.query.username;var userBrandtitle = req.query.userbrandtitle;var userBrandname = req.query.userbrandname;var userBrandplace = req.query.userbrandplace;var monthsalary = req.query.monthsalary;var hoursalary = req.query.hoursalary;
-    SettingPage.AddMemberBrandInformation(uniID,namePass,userBrandtitle,userBrandname,userBrandplace,monthsalary,hoursalary);
+    var uniID = req.query.uniID;var namePass = req.query.username;var userBrandtitle = req.query.userbrandtitle;
+    var userBrandname = req.query.userbrandname;var userBrandplace = req.query.userbrandplace;
+    var usermonthsalary = req.query.usermonthsalary;var userfoodsalary = req.query.userfoodsalary;
+    var userwithoutsalary = req.query.userwithoutsalary;var usertitlesalary = req.query.usertitlesalary;
+    var userextrasalary = req.query.userextrasalary;var userlawsalary = req.query.userlawsalary;var userfirstarrival = req.query.userfirstarrival;
+
+    SettingPage.AddMemberBrandInformation(uniID,namePass,userBrandtitle,userBrandname,userBrandplace,usermonthsalary,userfoodsalary,userwithoutsalary,usertitlesalary,userextrasalary,userlawsalary,userfirstarrival);
+
 });
 
 // 透過postman新增單店公告
