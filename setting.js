@@ -190,15 +190,18 @@ exports.UpdateUserData = function(_UniqueID,_UpdateHour,_UpdateMinute,_UpdateDay
   });
 }
 // D2 function
-exports.DeleteWorkSchdeule = function(_UniqueID)
+exports.DeleteWorkSchdeule = function(_UniqueID,_Name,_Year,_Month,_Day)
 {
-    dbwork.collection('employeeworkschedule').findOneAndDelete({TID:parseInt(_UniqueID,10)},
+    console.log( '_UniqueID = ',_UniqueID);
+    console.log( '_Name = ',_Name);
+    console.log( '_Year = ',_Year);
+    console.log( '_Month = ',_Month);
+    console.log( '_Day = ',_Day);
+    dbwork.collection('employeeworkschedule').findOneAndDelete({TID:parseInt(_UniqueID,10),name:_Name,workyear:_Year,workmonth:_Month,workday:_Day},
     (err, result) => {
       if (err) return res.send(500, err);
     });
 }
-
-
 
 exports.updateUserInformationByTID = function(_UniqueID)
 { 

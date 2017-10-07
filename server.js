@@ -421,7 +421,7 @@ app.get('/AdjustWorkSchedule/',function(req,res){
   });
 });
 app.post('/DeleteWorkScheduleData/', (req, res) => {
-  SettingPage.DeleteWorkSchdeule(req.body.TID);
+  SettingPage.DeleteWorkSchdeule(req.body.TID,req.body.name,req.body.workyear,req.body.workmonth,req.body.workday);
   sleep(2);
   res.redirect('/AdjustWorkSchedule/');    
 });

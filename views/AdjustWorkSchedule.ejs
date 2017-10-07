@@ -22,8 +22,14 @@
 	<% for(var i=0; i<WorkHour.length; i++) {%>
 		<tr>
 		   <td><form action="/DeleteWorkScheduleData/" method="POST">
-		      		<input type="hidden" placeholder="UniqueID" name="TID" value=<%= WorkHour[i].TID %>>
-		      		<button type="submit">刪除</button>
+		   <input type="hidden" placeholder="UniqueID" name="TID" value=<%= WorkHour[i].TID %>>
+		   <input type="hidden" placeholder="UniqueID" name="uniID" value=<%= WorkHour[i].uniID %>>
+		   <input type="hidden" placeholder="UniqueID" name="name" value=<%= WorkHour[i].name %>>
+		   <input type="hidden" placeholder="UniqueID" name="workyear" value=<%= WorkHour[i].workyear %>>
+		   <input type="hidden" placeholder="UniqueID" name="workmonth" value=<%= WorkHour[i].workmonth %>>
+		   <input type="hidden" placeholder="UniqueID" name="workday" value=<%= WorkHour[i].workday %>>
+
+		   <button type="submit">刪除</button>
 		  </form></td>
 		  <td><%= WorkHour[i].TID %></td>
 	      <td><%= WorkHour[i].uniID %></td>
