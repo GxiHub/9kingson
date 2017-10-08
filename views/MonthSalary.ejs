@@ -49,31 +49,35 @@
 		  <td> 唯一碼 </td>
 		  <td> 員工碼 </td>
 	      <td> 員工姓名 </td>
+	      <td> 計薪天數 </td> 
 	      <td> 計薪月份 </td> 
 	      <td> 基本薪資 </td> 
 	      <td> 全勤獎金 </td> 
 	      <td> 伙食獎金 </td> 
-	      <td> 職位獎金 </td> 
-	      <td> 加班小計 </td>
-	      <td> 遲到小計 </td> 
+	      <td> 職位獎金 </td>  
 	      <td> 額外獎金 </td>
 	      <td> 勞健保費 </td> 
-	      <td> 合計薪資 </td> 	      
+	      <td> 加班小計 </td>
+	      <td> 遲到小計 </td>	      
+	      <td> 基本薪資 </td>
+	      <td> 合計薪資 </td>	      
 	<%  for(var i=0; i<passvariable.length; i++) {%>
 		<tr>
 			  <td><%= passvariable[i].TID %></td>
 			  <td><%= passvariable[i].uniID %></td>
 		      <td><%= passvariable[i].name %></td>
+		      <td><%= passvariable[i].workdaynumber %></td>
 		      <td><%= passvariable[i].monthperiod %></td>
 		      <td><%= passvariable[i].monthsalary  %></td>
 		      <td><%= passvariable[i].withoutsalary %></td>
 		      <td><%= passvariable[i].foodsalary %></td>
 		      <td><%= passvariable[i].titlesalary %></td>
-		      <td><%= passvariable[i].addtimesalary %></td>
-		      <td><%= passvariable[i].latetimesalary %></td>
 		      <td><%= passvariable[i].extrabonus %></td>
 		      <td><%= passvariable[i].lawsalary %></td>
-		      <td><%= passvariable[i].totalmonthsalaty %></td>
+		      <td><%= passvariable[i].addtimesalary %></td>
+		      <td><%= passvariable[i].latetimesalary %></td>
+			  <td><%= passvariable[i].basicsalary %></td>
+		      <td><%= passvariable[i].totalmonthsalary %></td>
 		</tr>
 	<% } %>
 	</tbody>

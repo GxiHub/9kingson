@@ -428,9 +428,18 @@ app.post('/DeleteWorkScheduleData/', (req, res) => {
 
 // C4. 透過姓名與年月和店名來查詢加班薪水
 app.post('/CheckSalaryCount/',function(req,res){
-    dbwork.collection('everydayonlineofflinelist').find({'name':req.body.checkName,'Year':req.body.checkPeriodYear,'Month':req.body.checkPeriodMonth}).sort({"name":1,"Day": 1}).toArray(function(err, results) {
-          res.render('PrintSalaryCalculate.ejs',{passvariable:results});
-    });
+    if(req.body.checkName == '全部')
+    {
+      dbwork.collection('everydayonlineoffline').find({'Year':req.body.checkPeriodYear,'Month':req.body.checkPeriodMonth}).sort({"name":1,"Day": 1}).toArray(function(err, results) {
+            res.render('PrintSalaryCalculate.ejs',{passvariable:results});
+      });
+    }
+    else
+    {
+      dbwork.collection('everydayonlineoffline').find({'name':req.body.checkName,'Year':req.body.checkPeriodYear,'Month':req.body.checkPeriodMonth}).sort({"name":1,"Day": 1}).toArray(function(err, results) {
+            res.render('PrintSalaryCalculate.ejs',{passvariable:results});
+      });      
+    }
 });
 
 app.get('/CheckEmployeeBasicInformation/',function(req,res){
