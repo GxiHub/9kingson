@@ -40,6 +40,11 @@ app.get('/',function(req,res){
   res.render('index.ejs');
 });
 
+app.get('/QRcodeStockIn/',function(req,res){
+    console.log('req.query.thing = ',req.query.thing);
+});
+
+
 //透過手機端掃描二維條碼，並添加個人上下班時間
 app.get('/GetTokenToServer/',function(req,res){
     //body = Object.assign({}, results); 
